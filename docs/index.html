@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratório Docker de Bases de Dados</title>
+  <meta name="description" content="Tutorial prático de Docker com MySQL, PHP, Python e clusters MongoDB.">
+  <style>
+    :root { --ink:#172033; --muted:#5f6b7c; --paper:#f5f2ea; --card:#fffdf8; --blue:#2457d6; --cyan:#51c7d9; --yellow:#ffd166; --border:#d9d4c7; --code:#111827; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color:var(--blue); }
+    .topbar { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:12px max(20px, calc((100vw - 1180px)/2)); background:rgba(245,242,234,.94); border-bottom:1px solid var(--border); backdrop-filter:blur(12px); }
+    .brand { font-weight:850; letter-spacing:-.03em; }
+    .topbar nav { display:flex; gap:16px; overflow:auto; white-space:nowrap; font-size:14px; }
+    .topbar nav a { color:var(--ink); text-decoration:none; }
+    .hero { max-width:1180px; margin:auto; padding:76px 24px 52px; display:grid; grid-template-columns:1.15fr .85fr; gap:44px; align-items:center; }
+    .eyebrow { display:inline-flex; padding:6px 10px; border:1px solid var(--ink); border-radius:999px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:18px 0; max-width:760px; font-size:clamp(42px, 7vw, 78px); line-height:.98; letter-spacing:-.065em; }
+    h2 { margin:0 0 14px; font-size:clamp(28px, 4vw, 44px); line-height:1.1; letter-spacing:-.045em; }
+    h3 { margin:24px 0 8px; font-size:21px; line-height:1.25; }
+    p { margin:0 0 14px; }
+    .lead { max-width:700px; color:var(--muted); font-size:19px; }
+    .hero-card { padding:28px; background:var(--ink); color:white; border-radius:26px; box-shadow:14px 14px 0 var(--cyan); transform:rotate(1deg); }
+    .hero-card strong { color:var(--yellow); }
+    .stack { display:grid; gap:10px; margin-top:20px; }
+    .stack span { display:flex; justify-content:space-between; padding:10px 13px; border:1px solid #41506a; border-radius:10px; }
+    main { max-width:1180px; margin:auto; padding:0 24px 80px; }
+    section { padding:64px 0; border-top:1px solid var(--border); }
+    .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; }
+    .task { margin:20px 0; padding:22px; background:var(--card); border:1px solid var(--border); border-radius:16px; }
+    .task h3 { margin-top:0; }
+    .check { margin:15px 0; padding:14px 18px; background:#dff7ed; border-left:5px solid #1b8c67; border-radius:8px; }
+    .question { margin:15px 0; padding:14px 18px; background:#e8edf9; border-left:5px solid var(--blue); border-radius:8px; }
+    .tree { padding:22px; color:#dce6f4; background:var(--code); border-radius:14px; white-space:pre; overflow:auto; }
+    .tree code { padding:0; color:#f8fafc; background:transparent; font-size:14px; }
+    .compose-panel[hidden] { display:none; }
+    .compose-panel { margin-top:18px; }
+    .show-compose { padding:12px 17px; color:white; background:var(--blue); border:0; border-radius:9px; font:inherit; font-weight:800; cursor:pointer; }
+    .sharding-map { margin:28px 0; padding:26px; color:#eaf0f8; background:#111827; border-radius:20px; text-align:center; }
+    .arch-box { display:inline-block; min-width:190px; padding:14px 18px; color:var(--ink); background:white; border:3px solid var(--cyan); border-radius:12px; font-weight:850; }
+    .arch-box.router { color:white; background:var(--blue); border-color:#7fa1ff; }
+    .arch-arrow { padding:7px; color:var(--yellow); font-size:24px; font-weight:900; }
+    .arch-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; align-items:start; }
+    .replica-group { padding:16px; background:#202b40; border:1px solid #43516a; border-radius:14px; }
+    .replica-group h3 { margin:0 0 12px; color:var(--yellow); }
+    .members { display:grid; gap:7px; }
+    .members span { padding:8px; color:#172033; background:#dff7ed; border-radius:7px; font-size:13px; font-weight:750; }
+    .members.config span { background:#e8edf9; }
+    .tutorial-figure { margin:24px 0 34px; padding:12px; background:white; border:1px solid var(--border); border-radius:18px; box-shadow:0 8px 25px rgba(23,32,51,.08); }
+    .tutorial-figure img { display:block; width:100%; height:auto; border-radius:11px; }
+    .tutorial-figure figcaption { padding:12px 8px 2px; color:var(--muted); font-size:14px; text-align:center; }
+    .pros-cons { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0; }
+    .pros-cons article { padding:22px; background:var(--card); border:1px solid var(--border); border-radius:16px; }
+    .pros-cons article:first-child { border-top:6px solid #1b8c67; }
+    .pros-cons article:last-child { border-top:6px solid #d84c36; }
+    .pros-cons ul { margin:12px 0 0; padding-left:22px; }
+    .pros-cons li { margin:8px 0; }
+    .connection-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .card { padding:22px; background:var(--card); border:1px solid var(--border); border-radius:18px; box-shadow:0 8px 25px rgba(23,32,51,.05); }
+    .step { display:grid; grid-template-columns:46px 1fr; gap:14px; }
+    .step-number { width:40px; height:40px; display:grid; place-items:center; background:var(--blue); color:white; border-radius:50%; font-weight:800; }
+    .os-tabs { display:flex; gap:8px; margin:22px 0; }
+    .tab { appearance:none; padding:10px 16px; background:transparent; border:1px solid var(--border); border-radius:999px; color:var(--ink); font:inherit; font-weight:750; cursor:pointer; }
+    .tab[aria-selected="true"] { background:var(--ink); color:white; border-color:var(--ink); }
+    .os-panel[hidden] { display:none; }
+    .notice { margin:20px 0; padding:17px 19px; background:#fff5cd; border-left:5px solid #e2a800; border-radius:8px; }
+    .danger { background:#ffe7e1; border-left-color:#d84c36; }
+    .success { background:#dff7ed; border-left-color:#1b8c67; }
+    pre { position:relative; margin:14px 0 20px; padding:20px; overflow:auto; color:#e7edf7; background:var(--code); border-radius:14px; font:14px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    :not(pre)>code { padding:.15em .38em; background:#e7e2d5; border-radius:5px; font-size:.92em; }
+    .copy { position:absolute; top:9px; right:9px; padding:6px 9px; color:white; background:#29364c; border:1px solid #4a5a72; border-radius:7px; cursor:pointer; }
+    .diagram { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; padding:24px; background:#e8edf9; border-radius:20px; text-align:center; }
+    .node { padding:16px 10px; background:white; border:2px solid var(--blue); border-radius:12px; font-weight:750; }
+    .node.primary { color:white; background:var(--blue); }
+    .wide { grid-column:1 / -1; }
+    .route { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; margin:12px 0; }
+    .arrow { color:var(--blue); font-weight:900; }
+    table { width:100%; border-collapse:collapse; background:var(--card); }
+    th, td { padding:12px; border:1px solid var(--border); text-align:left; vertical-align:top; }
+    th { background:#ebe6da; }
+    details { margin:10px 0; padding:14px 16px; background:var(--card); border:1px solid var(--border); border-radius:12px; }
+    summary { cursor:pointer; font-weight:800; }
+    footer { padding:32px 24px; color:#cbd5e1; background:var(--ink); text-align:center; }
+    @media (max-width:800px) { .hero { grid-template-columns:1fr; padding-top:48px; } .grid,.pros-cons,.connection-grid { grid-template-columns:1fr; } .diagram,.arch-row { grid-template-columns:1fr; } .route { grid-template-columns:1fr; } .arrow { transform:rotate(90deg); text-align:center; } .topbar nav { display:none; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">DB LAB · Docker</div>
+    <nav aria-label="Navegação principal">
+      <a href="#preparar">Preparar</a><a href="#estrutura">Ficheiros</a><a href="#vale-pena">Contentores?</a><a href="#replicas">Réplicas</a><a href="#mysql">MySQL</a><a href="#sharding">Sharding</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <span class="eyebrow">Guião prático · Windows e macOS</span>
+      <h1>Uma aula dentro dos contentores.</h1>
+      <p class="lead">Os alunos arrancam os serviços no terminal, entram no MongoDB, compreendem cliente e servidor, observam o primary, testam a replicação e exploram sharding.</p>
+    </div>
+    <aside class="hero-card">
+      <strong>O pacote contém</strong>
+      <div class="stack">
+        <span>MySQL <b>8.4 LTS</b></span><span>PHP + Apache <b>8.2</b></span><span>Python <b>3.11</b></span><span>MongoDB <b>7.0</b></span><span>phpMyAdmin <b>5.2</b></span>
+      </div>
+    </aside>
+  </div>
+
+  <main>
+    <section id="preparar">
+      <h2>Preparar o terminal</h2>
+      <p>Objetivo: chegar à pasta <code>replica-set</code>, confirmar o Docker e arrancar o primeiro ambiente. Toda a aula é feita no terminal.</p>
+      <div class="os-tabs" role="tablist" aria-label="Sistema operativo">
+        <button class="tab" role="tab" aria-selected="true" data-os="windows">Windows</button>
+        <button class="tab" role="tab" aria-selected="false" data-os="mac">macOS</button>
+      </div>
+      <div class="os-panel" data-panel="windows">
+        <div class="grid">
+          <div class="card step"><span class="step-number">1</span><div><h3>Instalar Docker</h3><p>Instala o <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank" rel="noreferrer">Docker Desktop</a>, inicia-o e espera por “Engine running”.</p></div></div>
+          <div class="card step"><span class="step-number">2</span><div><h3>Abrir PowerShell aqui</h3><p>No Explorador abre <code>docker-database-lab</code>. Clica na barra do caminho, escreve <code>powershell</code> e carrega Enter.</p></div></div>
+          <div class="card step"><span class="step-number">3</span><div><h3>Entrar no cenário</h3><p>Executa <code>cd replica-set</code>.</p></div></div>
+        </div>
+        <div class="notice">Em computadores Windows mais antigos, ativa a virtualização na BIOS/UEFI. Se o WSL 2 não estiver disponível mas o computador tiver Windows 10 Pro, o Docker Desktop pode usar Hyper‑V. Usa sempre uma versão do Docker ainda suportada e atualizada.</div>
+      </div>
+      <div class="os-panel" data-panel="mac" hidden>
+        <div class="grid">
+          <div class="card step"><span class="step-number">1</span><div><h3>Instalar Docker</h3><p>Instala o <a href="https://docs.docker.com/desktop/setup/install/mac-install/" target="_blank" rel="noreferrer">Docker Desktop</a>, abre-o e espera que fique pronto.</p></div></div>
+          <div class="card step"><span class="step-number">2</span><div><h3>Abrir Terminal aqui</h3><p>No Finder seleciona <code>docker-database-lab</code>, botão direito → Serviços → “Novo Terminal na Pasta”.</p></div></div>
+          <div class="card step"><span class="step-number">3</span><div><h3>Entrar no cenário</h3><p>Executa <code>cd replica-set</code>.</p></div></div>
+        </div>
+      </div>
+      <div class="task"><h3>Exercício 1 · Arrancar e observar</h3>
+        <pre><button class="copy">Copiar</button><code>docker version
+docker compose up -d --build
+docker compose ps</code></pre>
+        <p>O último comando deve mostrar MySQL, PHP, Python, phpMyAdmin e os três servidores MongoDB. Na primeira execução, aguarda até o download das imagens terminar.</p>
+      </div>
+    </section>
+
+    <section id="estrutura">
+      <h2>Conhecer a estrutura do projeto</h2>
+      <p>Os caminhos dentro do Compose são relativos ao ficheiro <code>docker-compose.yml</code>. Por isso, podes mudar o nome da pasta principal, mas não deves mover ficheiros isoladamente sem corrigir os caminhos indicados no Compose.</p>
+      <div class="tree"><code>docker-database-lab/
+├── common/
+│   ├── mysql/init/001-school.sql       cria a base e a tabela de exemplo
+│   ├── php/Dockerfile                  constrói PHP com suporte MySQL
+│   └── python/                         imagem, dependências e exemplo MySQL
+├── replica-set/
+│   ├── docker-compose.yml              ambiente MongoDB sem sharding
+│   ├── mongo-init/init-replica.sh      cria o replica set rs0
+│   └── examples/mongo_replica_example.py
+├── sharded/
+│   ├── docker-compose.yml              ambiente com dois shards
+│   ├── mongo-init/init-sharded-cluster.sh
+│   └── examples/mongo_sharding_example.py
+├── tutorial/index.html                 este guião, aberto no navegador
+├── .env.example                        exemplo de portas e credenciais
+└── README.md                           resumo e comandos rápidos</code></div>
+      <h3>O que tem de ficar onde?</h3>
+      <table><thead><tr><th>Elemento</th><th>Pode mudar?</th><th>Consequência</th></tr></thead><tbody>
+        <tr><td>Pasta <code>docker-database-lab</code></td><td>Sim</td><td>Pode ter outro nome e estar noutro local.</td></tr>
+        <tr><td>Pastas <code>common</code>, <code>replica-set</code>, <code>sharded</code> e <code>tutorial</code></td><td>Sim, com cuidado</td><td>Se mudares nomes ou posições, atualiza <code>build.context</code> e <code>volumes</code> no Compose.</td></tr>
+        <tr><td><code>docker-compose.yml</code></td><td>Sim</td><td>Com outro nome, indica-o: <code>docker compose -f aula.yml up -d</code>.</td></tr>
+        <tr><td>Scripts SQL, Bash e Python</td><td>Sim</td><td>Atualiza o caminho do volume correspondente no Compose.</td></tr>
+      </tbody></table>
+      <p>O Docker procura automaticamente <code>compose.yaml</code>, <code>compose.yml</code>, <code>docker-compose.yaml</code> ou <code>docker-compose.yml</code>. Qualquer outro nome funciona com a opção <code>-f</code>.</p>
+      <button class="show-compose" type="button" aria-expanded="false" aria-controls="compose-panel">Mostrar docker-compose.yml comentado</button>
+      <div class="compose-panel" id="compose-panel" hidden>
+        <p>Esta é uma versão comentada, mas funcionalmente equivalente, do ficheiro do cenário de três réplicas. Os comentários iniciados por <code>#</code> explicam os blocos principais.</p>
+        <pre><code>version: "3.8"                    # mantido para compatibilidade com Compose antigo
+
+services:                         # conjunto de contentores
+  mysql:                         # nome usado na rede interna
+    image: mysql:8.4             # imagem descarregada do registry
+    environment:                 # variáveis recebidas pelo MySQL
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-school}
+      MYSQL_USER: ${MYSQL_USER:-student}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-studentpass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
+      # esquerda: porta no computador; direita: porta no contentor
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # volume persistente: conserva dados após docker compose down
+      - ../common/mysql/init:/docker-entrypoint-initdb.d:ro
+      # pasta local montada só para leitura (:ro)
+    healthcheck:                  # testa se o servidor já responde
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  phpmyadmin:
+    image: phpmyadmin:5.2-apache
+    environment:
+      PMA_HOST: mysql             # liga ao serviço chamado mysql
+    ports:
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8081}:80"
+    depends_on:
+      - mysql                     # ordem de arranque, não garante prontidão
+
+  php:
+    build:
+      context: ../common/php      # constrói usando esse Dockerfile
+    ports:
+      - "127.0.0.1:${TUTORIAL_PORT:-8080}:80"
+    volumes:
+      - ../tutorial:/var/www/html:ro
+    depends_on:
+      - mysql
+
+  python:
+    build:
+      context: ../common/python
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-school}
+      MYSQL_USER: ${MYSQL_USER:-student}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-studentpass}
+      MONGO_URI: mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=rs0
+    volumes:                      # disponibiliza os exemplos no contentor
+      - ../common/python/mysql_example.py:/workspace/mysql_example.py:ro
+      - ./examples/mongo_replica_example.py:/workspace/mongo/mongo_replica_example.py:ro
+    depends_on: [mysql, mongo1, mongo2, mongo3]
+
+  mongo1:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo1_data:/data/db
+
+  mongo2:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - mongo2_data:/data/db
+
+  mongo3:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "127.0.0.1:27019:27017"
+    volumes:
+      - mongo3_data:/data/db
+
+  mongo-init:
+    image: mongo:7.0
+    restart: "no"
+    depends_on: [mongo1, mongo2, mongo3]
+    volumes:
+      - ./mongo-init:/scripts:ro
+    entrypoint: ["bash", "/scripts/init-replica.sh"]
+    # contentor temporário que configura rs0 e depois termina
+
+volumes:                         # declaração dos volumes persistentes
+  mysql_data:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:</code></pre>
+      </div>
+      <div class="task"><h3>Onde ficam realmente guardados os dados?</h3>
+        <p>A linha <code>mysql_data:/var/lib/mysql</code> liga um <strong>volume Docker com nome</strong> à pasta onde o MySQL guarda os ficheiros internos. Os dados não ficam dentro da camada descartável do contentor: continuam disponíveis depois de <code>docker compose down</code> e voltam a aparecer quando o serviço arranca novamente.</p>
+        <pre><button class="copy">Copiar</button><code>docker volume ls</code></pre>
+        <p>O volume aparecerá com um nome que combina o nome do projeto Compose com <code>mysql_data</code>. No Docker Desktop para Windows e macOS, o conteúdo físico do volume é gerido dentro da máquina virtual do Docker; não é uma pasta normal que se deva editar manualmente.</p>
+        <div class="notice danger"><strong>Um volume persistente não é um backup.</strong> Se o volume for eliminado, se o disco avariar ou se executares <code>docker compose down -v</code>, os dados podem desaparecer. Um backup deve ser exportado para um ficheiro fora do volume.</div>
+        <h3>Criar um backup fora do Docker</h3>
+        <p>Na pasta <code>replica-set</code> ou <code>sharded</code>, executa:</p>
+        <pre><button class="copy">Copiar</button><code>mkdir backups
+docker compose exec mysql sh -c "mysqldump -u root -prootpass school &gt; /tmp/school.sql"
+docker compose cp mysql:/tmp/school.sql ./backups/school.sql</code></pre>
+        <p>O ficheiro <code>backups/school.sql</code> fica no disco do computador e pode ser copiado para outro disco, servidor ou sistema de backups.</p>
+        <h3>Restaurar esse backup</h3>
+        <pre><button class="copy">Copiar</button><code>docker compose cp ./backups/school.sql mysql:/tmp/school.sql
+docker compose exec mysql sh -c "mysql -u root -prootpass school &lt; /tmp/school.sql"</code></pre>
+        <p>Também seria possível substituir o volume por uma pasta local, por exemplo <code>./dados/mysql:/var/lib/mysql</code>. Contudo, em Windows e macOS isso pode causar problemas de permissões e desempenho. Para este laboratório, mantém o volume e usa ficheiros SQL para backup.</p>
+      </div>
+
+      <div class="task"><h3>Onde colocar novos ficheiros SQL e Python?</h3>
+        <div class="tree"><code>docker-database-lab/
+├── common/mysql/init/
+│   ├── 001-school.sql
+│   ├── 002-dados-iniciais.sql
+│   └── 003-vistas.sql
+├── common/python/
+│   ├── mysql_example.py
+│   └── relatorio_alunos.py
+├── replica-set/examples/
+│   └── mongo_replica_example.py
+└── sharded/examples/
+    └── mongo_sharding_example.py</code></div>
+        <ul>
+          <li>Os ficheiros podem ter qualquer nome válido. Usa a extensão <code>.sql</code> para SQL e <code>.py</code> para Python.</li>
+          <li>Na pasta <code>common/mysql/init</code>, prefixos como <code>001-</code>, <code>002-</code> e <code>003-</code> tornam explícita a ordem de execução.</li>
+          <li>Os scripts colocados em <code>/docker-entrypoint-initdb.d</code> são executados automaticamente <strong>apenas quando o volume MySQL é criado vazio</strong>. Reiniciar o contentor não os executa novamente.</li>
+          <li><code>common/python</code> é adequado para programas partilhados pelos dois cenários. As pastas <code>replica-set/examples</code> e <code>sharded/examples</code> guardam exemplos específicos de cada cenário.</li>
+        </ul>
+        <p>O nome no disco e o nome dentro do contentor podem ser diferentes. Para disponibilizar um novo programa, acrescenta ao serviço <code>python</code> no Compose:</p>
+        <pre><code>volumes:
+  - ../common/python/relatorio_alunos.py:/workspace/relatorio_alunos.py:ro</code></pre>
+        <p>Depois executa:</p>
+        <pre><button class="copy">Copiar</button><code>docker compose exec python python /workspace/relatorio_alunos.py</code></pre>
+        <p>Para executar novamente um SQL sem apagar o volume, entra no cliente MySQL e usa <code>source /caminho/ficheiro.sql</code>, ou copia-o para o contentor com <code>docker compose cp</code>. Não uses <code>down -v</code> apenas para repetir um script: esse comando elimina todos os dados do cenário.</p>
+      </div>
+      <div class="notice">Estes comandos também poderiam ser executados na aplicação Docker Desktop, usando o separador de terminal/exec de cada contentor. Neste guião usamos o terminal do sistema para que os comandos sejam iguais no Windows e no macOS.</div>
+    </section>
+
+    <section id="vale-pena">
+      <h2>Vale a pena usar contentores?</h2>
+      <p>Docker não altera a forma como MySQL, MongoDB ou Python funcionam. Cria ambientes isolados e reproduzíveis onde esses programas são executados. É especialmente útil numa aula, porque todos começam com versões e configurações semelhantes.</p>
+      <div class="pros-cons">
+        <article><h3>Vantagens</h3><ul>
+          <li>Instala MySQL, MongoDB, PHP e Python sem os misturar com o sistema operativo.</li>
+          <li>A mesma configuração pode ser usada no Windows e no macOS.</li>
+          <li>As versões das ferramentas ficam registadas no Compose e nos Dockerfiles.</li>
+          <li>É fácil arrancar, parar e recriar todo o laboratório.</li>
+          <li>Os nomes dos serviços funcionam como DNS dentro da rede Docker.</li>
+          <li>Volumes permitem conservar os dados quando os contentores são substituídos.</li>
+          <li>Reduz diferenças entre os computadores dos alunos.</li>
+        </ul></article>
+        <article><h3>Desvantagens</h3><ul>
+          <li>Docker Desktop consome memória, processador e espaço em disco.</li>
+          <li>A primeira execução pode ser demorada devido ao download das imagens.</li>
+          <li>Portas ocupadas por outras aplicações podem causar conflitos.</li>
+          <li>Volumes, redes e nomes de contentores acrescentam conceitos novos.</li>
+          <li>Em Windows antigos, virtualização, WSL 2 ou Hyper-V podem ser uma limitação.</li>
+          <li>Um Compose local não substitui uma instalação de produção segura nem um orquestrador multi-host.</li>
+        </ul></article>
+      </div>
+
+      <h3>O código Python muda?</h3>
+      <p>A parte que liga à base de dados e executa SQL pode ser exatamente a mesma. O programa recebe o endereço e a porta através de variáveis de ambiente:</p>
+      <pre><button class="copy">Copiar</button><code>connection = pymysql.connect(
+    host=os.getenv("MYSQL_HOST", "mysql"),
+    port=int(os.getenv("MYSQL_PORT", "3306")),
+    user=os.getenv("MYSQL_USER", "student"),
+    password=os.getenv("MYSQL_PASSWORD", "studentpass"),
+    database=os.getenv("MYSQL_DATABASE", "school"),
+)
+
+cursor.execute(
+    "INSERT INTO students (name, course) VALUES (%s, %s)",
+    ("Ana Docker", "Bases de Dados"),
+)
+cursor.execute("SELECT * FROM students")</code></pre>
+      <p>As chamadas <code>pymysql.connect()</code>, <code>INSERT</code> e <code>SELECT</code> são iguais dentro e fora do Docker. O que muda é apenas a configuração da ligação:</p>
+      <div class="connection-grid">
+        <article class="card"><h3>Python dentro do Compose</h3>
+          <pre><code>MYSQL_HOST=mysql
+MYSQL_PORT=3306</code></pre>
+          <p><code>mysql</code> é o nome do serviço no <code>docker-compose.yml</code>. O DNS interno do Docker converte esse nome no IP privado atual do contentor MySQL.</p>
+        </article>
+        <article class="card"><h3>Python no computador</h3>
+          <pre><code>MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306</code></pre>
+          <p><code>127.0.0.1</code> significa “este computador”. A porta publicada pelo Compose encaminha a ligação para a porta <code>3306</code> do contentor MySQL.</p>
+        </article>
+      </div>
+      <div class="notice danger"><strong>Não é o mesmo IP.</strong> Dentro do contentor Python, <code>127.0.0.1</code> apontaria para o próprio contentor Python, não para o MySQL. Por isso usa-se o nome <code>mysql</code>. Fora do Docker usa-se <code>127.0.0.1</code> porque o Compose publicou a porta no computador.</div>
+      <h3>E a porta é igual?</h3>
+      <p>Nesta configuração, sim: por omissão, a porta <code>3306</code> do computador é encaminhada para a porta <code>3306</code> do contentor. A linha é:</p>
+      <pre><code>"127.0.0.1:${MYSQL_PORT:-3306}:3306"
+               porta exterior ─┘   └─ porta interior</code></pre>
+      <p>Se definires <code>MYSQL_PORT=13306</code>, um Python executado no computador usa <code>127.0.0.1:13306</code>. O Python dentro do Compose continua a usar <code>mysql:3306</code>. Assim, mantemos um único ficheiro Python e alteramos apenas as variáveis de ambiente.</p>
+    </section>
+
+    <section id="replicas">
+      <h2>Experimentar as réplicas</h2>
+      <p>Um replica set tem um servidor <strong>primary</strong>, que recebe as escritas, e dois <strong>secondaries</strong>, que mantêm cópias. Se o primary falhar, os restantes podem eleger outro.</p>
+      <div class="diagram" aria-label="Diagrama do replica set">
+        <div class="node primary">mongo1<br>PRIMARY</div><div class="node">mongo2<br>SECONDARY</div><div class="node">mongo3<br>SECONDARY</div>
+      </div>
+      <div class="task"><h3><code>mongosh</code> não é o servidor</h3>
+        <p><code>mongod</code> é o processo servidor: guarda os dados, recebe pedidos e participa no replica set. Cada serviço <code>mongo1</code>, <code>mongo2</code> e <code>mongo3</code> executa um servidor <code>mongod</code>.</p>
+        <p><code>mongosh</code> é apenas um cliente de linha de comandos. Abre uma ligação a um servidor <code>mongod</code>, envia instruções JavaScript e mostra as respostas. Quando executas <code>mongosh</code> dentro de <code>mongo1</code>, o cliente liga-se por omissão ao servidor da mesma máquina, em <code>localhost:27017</code>.</p>
+        <p>Podias executar o cliente noutro contentor ou no computador, desde que indicasses um endereço alcançável. Fechar o <code>mongosh</code> não desliga o servidor.</p>
+      </div>
+      <div class="task"><h3>Exercício 2 · Abrir um terminal no contentor principal</h3>
+        <p>No terminal do computador, abre uma shell dentro de <code>mongo1</code>:</p>
+        <pre><button class="copy">Copiar</button><code>docker compose exec mongo1 bash</code></pre>
+        <p>O prompt muda: estás dentro do contentor. Abre agora a consola MongoDB:</p>
+        <pre><button class="copy">Copiar</button><code>mongosh</code></pre>
+        <p>Já dentro do <code>mongosh</code>, executa:</p>
+        <pre><button class="copy">Copiar</button><code>db.hello().isWritablePrimary
+rs.status().members.map(m =&gt; ({ nome: m.name, estado: m.stateStr }))</code></pre>
+        <div class="check">O primeiro resultado esperado é <code>true</code>. A lista deve mostrar um <code>PRIMARY</code> e dois <code>SECONDARY</code>.</div>
+      </div>
+      <div class="task"><h3>Exercício 3 · Inserir no primary</h3>
+        <p>Continua dentro do <code>mongosh</code> de <code>mongo1</code>:</p>
+        <pre><button class="copy">Copiar</button><code>use aula
+db.mensagens.insertOne({ texto: "Olá, réplicas!", aluno: "Ana", instante: new Date() })
+db.mensagens.find().pretty()</code></pre>
+      </div>
+      <div class="task"><h3>Exercício 4 · Ler num secondary</h3>
+        <p>Sai primeiro do <code>mongosh</code> e depois da shell do contentor. Em seguida abre uma shell no segundo contentor:</p>
+        <pre><button class="copy">Copiar</button><code>exit
+exit
+docker compose exec mongo2 bash
+mongosh</code></pre>
+        <p>Dentro do novo <code>mongosh</code>:</p>
+        <pre><button class="copy">Copiar</button><code>db.hello().secondary
+db.getMongo().setReadPref("secondary")
+use aula
+db.mensagens.find().pretty()</code></pre>
+        <p>Uma ligação começa normalmente com preferência de leitura <code>primary</code>. Como esta ligação foi aberta diretamente num secondary, definimos <code>secondary</code> para autorizar e encaminhar a leitura para esse membro. Não usamos <code>rs.secondaryOk()</code>, porque esse atalho está obsoleto.</p>
+        <div class="check">Deves obter <code>true</code> e ver “Olá, réplicas!”. O documento escrito no primary já foi replicado.</div>
+        <div class="question"><strong>Para discutir:</strong> porque se escreve normalmente no primary, mas se pode ler num secondary? O que acontece durante uma eleição?</div>
+      </div>
+    </section>
+
+    <section id="mysql">
+      <h2>MySQL no terminal e programas Python</h2>
+      <p>O ficheiro <code>001-school.sql</code> cria automaticamente a base de dados <code>school</code> e uma única tabela chamada <code>students</code>.</p>
+      <table><thead><tr><th>Campo</th><th>Tipo</th><th>Finalidade</th></tr></thead><tbody><tr><td>id</td><td>INT</td><td>Identificador automático</td></tr><tr><td>name</td><td>VARCHAR</td><td>Nome do aluno</td></tr><tr><td>course</td><td>VARCHAR</td><td>Curso</td></tr><tr><td>created_at</td><td>TIMESTAMP</td><td>Data de criação</td></tr></tbody></table>
+
+      <h3>Opção A · Cliente MySQL instalado no sistema operativo</h3>
+      <p>Esta opção só funciona se o comando <code>mysql</code> estiver instalado no Windows ou no macOS. No PowerShell ou Terminal, ainda dentro da pasta do cenário, executa:</p>
+      <pre><button class="copy">Copiar</button><code>mysql -h 127.0.0.1 -P 3306 -u student -p school</code></pre>
+      <p>Quando aparecer <code>Enter password:</code>, escreve <code>studentpass</code>. A palavra-passe não aparece no ecrã enquanto é escrita. Os parâmetros significam:</p>
+      <table><thead><tr><th>Parâmetro</th><th>Significado</th></tr></thead><tbody>
+        <tr><td><code>-h 127.0.0.1</code></td><td>Endereço do computador onde o Docker publicou o MySQL.</td></tr>
+        <tr><td><code>-P 3306</code></td><td>Porta exterior publicada pelo Compose. O <code>P</code> é maiúsculo.</td></tr>
+        <tr><td><code>-u student</code></td><td>Utilizador criado pelas variáveis do Compose.</td></tr>
+        <tr><td><code>-p</code></td><td>Pede a palavra-passe de forma interativa.</td></tr>
+        <tr><td><code>school</code></td><td>Base de dados que fica selecionada após a ligação.</td></tr>
+      </tbody></table>
+
+      <h3>Opção B · Abrir um terminal no contentor MySQL</h3>
+      <p>Esta opção não exige instalar o cliente MySQL no sistema, porque a imagem já o contém. O serviço chama-se <code>mysql</code>, conforme o nome usado no Compose:</p>
+      <pre><button class="copy">Copiar</button><code>docker compose exec mysql bash</code></pre>
+      <p>O prompt muda, indicando que estás dentro do contentor. Abre o cliente como administrador:</p>
+      <pre><button class="copy">Copiar</button><code>mysql -u root -p</code></pre>
+      <p>Escreve <code>rootpass</code> quando for pedida a palavra-passe. Dentro do cliente MySQL, experimenta:</p>
+      <pre><button class="copy">Copiar</button><code>SHOW DATABASES;
+USE school;
+SHOW TABLES;
+DESCRIBE students;
+SELECT * FROM students;</code></pre>
+      <p>Resultados esperados: <code>SHOW DATABASES</code> inclui <code>school</code>; <code>SHOW TABLES</code> mostra <code>students</code>; <code>DESCRIBE</code> apresenta as quatro colunas da tabela; e <code>SELECT</code> mostra os registos existentes.</p>
+      <p>Para sair do cliente e depois do contentor:</p>
+      <pre><button class="copy">Copiar</button><code>exit
+exit</code></pre>
+
+      <h3>Opção C · Executar o cliente diretamente, sem abrir primeiro a shell</h3>
+      <pre><button class="copy">Copiar</button><code>docker compose exec mysql mysql -u student -p school</code></pre>
+      <p>Escreve <code>studentpass</code>. Este comando inicia o cliente MySQL diretamente dentro do contentor. Ao executar <code>exit</code>, regressas logo ao terminal do computador.</p>
+
+      <h3>Abrir no phpMyAdmin</h3>
+      <p>Visita <a href="http://localhost:8081">http://localhost:8081</a> e entra com utilizador <code>student</code> e palavra-passe <code>studentpass</code>. O servidor é <code>mysql</code>.</p>
+      <h3>Finalmente: executar o exemplo Python</h3>
+      <pre><button class="copy">Copiar</button><code>docker compose exec python python /workspace/mysql_example.py</code></pre>
+      <p>O programa faz um <code>INSERT</code>, guarda a alteração e executa um <code>SELECT</code> para mostrar exatamente o registo acabado de criar.</p>
+      <h3>Executar o exemplo MongoDB</h3>
+      <pre><button class="copy">Copiar</button><code>docker compose exec python python /workspace/mongo/mongo_replica_example.py</code></pre>
+      <p>O programa liga-se aos três endereços do replica set, insere no primary e procura o documento pelo respetivo identificador.</p>
+      <div class="question"><strong>Desafio curto:</strong> abre <code>common/python/mysql_example.py</code>, altera o nome e o curso inseridos e volta a executar o programa.</div>
+    </section>
+
+    <section id="sharding">
+      <h2>Distribuir dados com sharding</h2>
+      <h3>Visão geral: um cluster pode ocupar vários computadores</h3>
+      <p>Num ambiente real, os vários componentes não têm de estar na mesma máquina. A aplicação ou o cliente <code>mongosh</code> liga-se ao <code>mongos</code>; o router consulta os metadados no config server replica set e encaminha cada operação para o shard correto. Cada shard é também um replica set.</p>
+      <figure class="tutorial-figure">
+        <img src="assets/mongodb-sharding-distribuido.png" alt="Cluster MongoDB distribuído: aplicação ligada ao mongos, config servers e dois shards instalados em computadores diferentes, cada um com três réplicas">
+        <figcaption>Arquitetura geral: os shards podem estar em computadores físicos diferentes, desde que todos consigam comunicar pela rede.</figcaption>
+      </figure>
+      <p>Na imagem, o Shard 1 está no Computador A e o Shard 2 no Computador B. A figura é conceptual: numa implantação real, é preferível distribuir também as réplicas de cada shard por máquinas ou zonas de falha diferentes.</p>
+
+      <h3>Neste laboratório: tudo corre num único computador</h3>
+      <p>Para facilitar a aula, o Docker Compose cria todos os contentores na mesma máquina e liga-os através de uma rede Docker local. Continuam a existir dois shards, três réplicas por shard, três config servers e um <code>mongos</code>; apenas não estão separados fisicamente.</p>
+      <figure class="tutorial-figure">
+        <img src="assets/mongodb-sharding-laboratorio-local.png" alt="Laboratório MongoDB num único computador com mongos, config servers, dois shards de três réplicas e distribuição norte e sul">
+        <figcaption>Configuração usada no laboratório: <code>collection_one</code> no Shard 1, <code>collection_two</code> no Shard 2 e <code>collection_three</code> dividida pelo campo <code>campus</code>.</figcaption>
+      </figure>
+      <button class="show-compose show-sharded-compose" type="button" aria-expanded="false" aria-controls="sharded-compose-panel">Mostrar sharded/docker-compose.yml explicado</button>
+      <div class="compose-panel" id="sharded-compose-panel" hidden>
+        <p>Os blocos MySQL, phpMyAdmin, PHP e Python são equivalentes aos do primeiro Compose. A parte abaixo é a configuração MongoDB do ficheiro <code>sharded/docker-compose.yml</code>:</p>
+        <pre><code>services:
+  config1:                       # primeiro membro dos config servers
+    image: mongo:7.0
+    command: ["mongod", "--configsvr", "--replSet", "configRS",
+              "--bind_ip_all", "--port", "27019"]
+    volumes:
+      - config1_data:/data/configdb
+
+  config2:                       # segundo membro de configRS
+    image: mongo:7.0
+    command: ["mongod", "--configsvr", "--replSet", "configRS",
+              "--bind_ip_all", "--port", "27019"]
+
+  config3:                       # terceiro membro de configRS
+    image: mongo:7.0
+    command: ["mongod", "--configsvr", "--replSet", "configRS",
+              "--bind_ip_all", "--port", "27019"]
+
+  shard1a:                       # três membros do primeiro shard
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS",
+              "--bind_ip_all", "--port", "27018"]
+    volumes: [shard1a_data:/data/db]
+  shard1b:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS",
+              "--bind_ip_all", "--port", "27018"]
+  shard1c:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS",
+              "--bind_ip_all", "--port", "27018"]
+
+  shard2a:                       # três membros do segundo shard
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS",
+              "--bind_ip_all", "--port", "27018"]
+  shard2b:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS",
+              "--bind_ip_all", "--port", "27018"]
+  shard2c:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS",
+              "--bind_ip_all", "--port", "27018"]
+
+  mongos:                        # router; não guarda os documentos
+    image: mongo:7.0
+    command:
+      - mongos
+      - --configdb
+      - configRS/config1:27019,config2:27019,config3:27019
+      - --bind_ip_all
+      - --port
+      - "27017"
+    ports:
+      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
+    depends_on: [config1, config2, config3]
+
+  cluster-init:                  # executa uma vez e configura o cluster
+    image: mongo:7.0
+    restart: "no"
+    depends_on:
+      - config1
+      - config2
+      - config3
+      - shard1a
+      - shard1b
+      - shard1c
+      - shard2a
+      - shard2b
+      - shard2c
+      - mongos
+    volumes:
+      - ./mongo-init:/scripts:ro
+    entrypoint: ["bash", "/scripts/init-sharded-cluster.sh"]</code></pre>
+        <table><thead><tr><th>Linha/opção</th><th>Função</th></tr></thead><tbody>
+          <tr><td><code>--configsvr</code></td><td>Marca o processo como config server, onde ficam os metadados dos chunks.</td></tr>
+          <tr><td><code>--shardsvr</code></td><td>Marca o processo como membro de um shard.</td></tr>
+          <tr><td><code>--replSet shard1RS</code></td><td>Diz a que replica set pertence cada membro.</td></tr>
+          <tr><td><code>--configdb configRS/...</code></td><td>Diz ao <code>mongos</code> onde encontrar os config servers.</td></tr>
+          <tr><td><code>depends_on</code></td><td>Controla a ordem de arranque dentro deste Compose; não cria uma rede entre computadores.</td></tr>
+          <tr><td><code>cluster-init</code></td><td>Monta e executa <code>init-sharded-cluster.sh</code>, que inicia os replica sets, adiciona os shards e configura as zonas.</td></tr>
+        </tbody></table>
+      </div>
+      <div class="notice danger"><strong>Importante:</strong> não existem documentos duplicados. As duas primeiras coleções ficam cada uma num shard; a terceira é repartida pelo campo <code>campus</code>.</div>
+      <h3>Regra usada no exemplo</h3>
+      <div class="route"><div class="card"><code>collection_one</code></div><span class="arrow">→</span><div class="node">toda no Shard 1</div></div>
+      <div class="route"><div class="card"><code>collection_two</code></div><span class="arrow">→</span><div class="node">toda no Shard 2</div></div>
+      <div class="route"><div class="card"><code>collection_three · campus = norte</code></div><span class="arrow">→</span><div class="node">Shard 1</div></div>
+      <div class="route"><div class="card"><code>collection_three · campus = sul</code></div><span class="arrow">→</span><div class="node">Shard 2</div></div>
+      <h3>Antes de mudar de cenário</h3>
+      <p>Para o primeiro ambiente, porque ambos usam as mesmas portas:</p>
+      <pre><button class="copy">Copiar</button><code>docker compose down</code></pre>
+      <p>Depois abre a pasta <code>sharded</code> e executa:</p>
+      <pre><button class="copy">Copiar</button><code>docker compose up -d --build</code></pre>
+      <p>Este cenário inicia vários processos MongoDB e precisa de mais memória; reserva idealmente 8 GB ao Docker Desktop.</p>
+      <h3>Executar o exemplo de sharding</h3>
+      <pre><button class="copy">Copiar</button><code>docker compose exec python python /workspace/mongo/mongo_sharding_example.py</code></pre>
+      <p>Deverás ver um documento nas coleções 1 e 2 e dois na coleção 3. Nesta última, <code>campus=norte</code> fica no Shard 1 e <code>campus=sul</code> fica no Shard 2.</p>
+      <div class="task"><h3>Entrar no cluster e ver o que o programa inseriu</h3>
+        <p>O ponto de entrada de um cluster com sharding é o router <code>mongos</code>. Abre o cliente diretamente nesse contentor:</p>
+        <pre><button class="copy">Copiar</button><code>docker compose exec mongos mongosh</code></pre>
+        <p>O prompt deve incluir <code>[mongos]</code>. Seleciona a base e confirma as três coleções:</p>
+        <pre><button class="copy">Copiar</button><code>use school_sharded
+show collections</code></pre>
+        <p>Resultado esperado:</p>
+        <pre><code>collection_one
+collection_three
+collection_two</code></pre>
+        <p>Consulta agora os documentos, omitindo o identificador automático:</p>
+        <pre><button class="copy">Copiar</button><code>db.collection_one.find({}, { _id: 0 }).pretty()
+db.collection_two.find({}, { _id: 0 }).pretty()
+db.collection_three.find({}, { _id: 0 }).sort({ campus: 1 }).pretty()</code></pre>
+        <p>Os números de <code>shard_key</code> variam em cada execução, mas o resultado terá esta forma:</p>
+        <pre><code>// collection_one
+{ shard_key: ..., message: "Coleção 1: documento guardado no shard 1" }
+
+// collection_two
+{ shard_key: ..., message: "Coleção 2: documento guardado no shard 2" }
+
+// collection_three
+{ campus: "norte", shard_key: ..., message: "Documento do campus norte" }
+{ campus: "sul",   shard_key: ..., message: "Documento do campus sul" }</code></pre>
+      </div>
+      <div class="task"><h3>Confirmar o shard escolhido pelo router</h3>
+        <p>A opção <code>explain()</code> não devolve documentos; mostra o plano usado para executar a consulta:</p>
+        <pre><button class="copy">Copiar</button><code>db.collection_three.find({ campus: "norte" }).explain().queryPlanner.winningPlan.shards.map(s =&gt; s.shardName)
+db.collection_three.find({ campus: "sul" }).explain().queryPlanner.winningPlan.shards.map(s =&gt; s.shardName)</code></pre>
+        <p>Resultados esperados:</p>
+        <pre><code>[ "shard1RS" ]
+[ "shard2RS" ]</code></pre>
+        <p>Isto confirma que o filtro <code>campus=norte</code> é enviado apenas ao primeiro shard e <code>campus=sul</code> apenas ao segundo. Termina com <code>exit</code>.</p>
+      </div>
+      <h3>Ver o estado do cluster</h3>
+      <pre><button class="copy">Copiar</button><code>docker compose exec mongos mongosh --eval "sh.status()"</code></pre>
+      <div class="task"><h3>Exercício adicional · Inserir manualmente através do router</h3>
+        <pre><button class="copy">Copiar</button><code>docker compose exec mongos mongosh</code></pre>
+        <p>Dentro do <code>mongosh</code> ligado ao router:</p>
+        <pre><button class="copy">Copiar</button><code>use school_sharded
+db.collection_three.insertMany([
+  { campus: "norte", shard_key: 101, aluno: "Beatriz" },
+  { campus: "sul", shard_key: 102, aluno: "Carlos" }
+])
+db.collection_three.find().pretty()</code></pre>
+        <p>O <code>insertMany</code> devolve <code>acknowledged: true</code> e dois identificadores. O <code>find</code> mostra Beatriz com <code>campus=norte</code> e Carlos com <code>campus=sul</code>.</p>
+      </div>
+    </section>
+
+    <section id="multihost">
+      <h2>Colocar um shard noutro computador</h2>
+      <div class="notice danger"><strong>O Compose deste laboratório é local.</strong> Os nomes <code>shard1a</code>, <code>config1</code> e semelhantes só existem na rede Docker do mesmo computador. Mudar apenas um nome no YAML não distribui os contentores.</div>
+      <p>É possível distribuir o cluster, mas tens de executar os contentores nas máquinas respetivas e garantir comunicação IP/DNS entre todos os membros. Para mover, por exemplo, o <code>shard2RS</code> para outros computadores, estes são os pontos concretos a alterar:</p>
+      <table><thead><tr><th>Onde mexer</th><th>Alteração necessária</th></tr></thead><tbody>
+        <tr><td><code>sharded/docker-compose.yml</code></td><td>Nas máquinas remotas, mantém apenas os serviços que aí irão correr. Publica a porta do <code>mongod</code> para a rede, por exemplo <code>"27018:27018"</code>, em vez de a limitar a <code>127.0.0.1</code>.</td></tr>
+        <tr><td><code>sharded/mongo-init/init-sharded-cluster.sh</code> — <code>rs.initiate()</code></td><td>Troca <code>shard2a:27018</code>, <code>shard2b:27018</code> e <code>shard2c:27018</code> por nomes DNS ou IP alcançáveis, como <code>mongo-a.escola.local:27018</code>.</td></tr>
+        <tr><td>Mesmo script — <code>sh.addShard()</code></td><td>Usa exatamente os mesmos endereços anunciados pelo replica set: <code>shard2RS/mongo-a.escola.local:27018,...</code>.</td></tr>
+        <tr><td>Serviço <code>mongos</code> — <code>--configdb</code></td><td>Se os config servers também forem remotos, substitui <code>config1</code>, <code>config2</code> e <code>config3</code> pelos respetivos DNS/IP.</td></tr>
+        <tr><td>Aplicação Python — <code>MONGO_URI</code></td><td>Se o <code>mongos</code> ficar noutro computador, usa o endereço desse router, por exemplo <code>mongodb://router.escola.local:27017</code>.</td></tr>
+        <tr><td>Rede e segurança</td><td>Abre apenas as portas necessárias entre as máquinas, garante resolução DNS, latência aceitável e relógios sincronizados. Ativa autenticação, um <code>keyFile</code> partilhado e TLS antes de usar uma rede real.</td></tr>
+      </tbody></table>
+      <h3>Exemplo conceptual da alteração no script</h3>
+      <pre><code>// Em init-sharded-cluster.sh, os membros deixam de usar nomes locais Docker:
+rs.initiate({
+  _id: "shard2RS",
+  members: [
+    { _id: 0, host: "mongo-a.escola.local:27018" },
+    { _id: 1, host: "mongo-b.escola.local:27018" },
+    { _id: 2, host: "mongo-c.escola.local:27018" }
+  ]
+})</code></pre>
+      <p>O endereço que cada membro anuncia tem de ser alcançável pelos outros membros, pelo <code>mongos</code> e pelas ferramentas de administração. <strong>Não uses <code>localhost</code> nem nomes exclusivos de uma rede Compose local.</strong></p>
+      <p>Para ensino, mantém tudo num computador. Para uma implantação real em várias máquinas, usa Kubernetes, Docker Swarm, máquinas virtuais ou MongoDB Atlas; o Docker Compose, sozinho, não é um orquestrador multi-host.</p>
+    </section>
+
+  </main>
+
+  <footer>Laboratório educativo · credenciais simples e MongoDB sem autenticação · não usar em produção</footer>
+  <script>
+    const composeButton = document.querySelector('.show-compose');
+    const composePanel = document.querySelector('#compose-panel');
+    composeButton.addEventListener('click', () => {
+      const willOpen = composePanel.hidden;
+      composePanel.hidden = !willOpen;
+      composeButton.setAttribute('aria-expanded', String(willOpen));
+      composeButton.textContent = willOpen
+        ? 'Ocultar docker-compose.yml'
+        : 'Mostrar docker-compose.yml comentado';
+    });
+    const shardedComposeButton = document.querySelector('.show-sharded-compose');
+    const shardedComposePanel = document.querySelector('#sharded-compose-panel');
+    shardedComposeButton.addEventListener('click', () => {
+      const willOpen = shardedComposePanel.hidden;
+      shardedComposePanel.hidden = !willOpen;
+      shardedComposeButton.setAttribute('aria-expanded', String(willOpen));
+      shardedComposeButton.textContent = willOpen
+        ? 'Ocultar sharded/docker-compose.yml'
+        : 'Mostrar sharded/docker-compose.yml explicado';
+    });
+    document.querySelectorAll('.tab').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+        document.querySelectorAll('.os-panel').forEach((panel) => { panel.hidden = panel.dataset.panel !== button.dataset.os; });
+      });
+    });
+    document.querySelectorAll('.copy').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const text = button.parentElement.querySelector('code').textContent;
+        await navigator.clipboard.writeText(text);
+        const previous = button.textContent;
+        button.textContent = 'Copiado';
+        setTimeout(() => { button.textContent = previous; }, 1400);
+      });
+    });
+  </script>
+</body>
+</html>

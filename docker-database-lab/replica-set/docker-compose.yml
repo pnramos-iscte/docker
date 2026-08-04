@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-school}
+      MYSQL_USER: ${MYSQL_USER:-student}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-studentpass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../common/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  phpmyadmin:
+    image: phpmyadmin:5.2-apache
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8081}:80"
+    depends_on:
+      - mysql
+
+  php:
+    build:
+      context: ../common/php
+    ports:
+      - "127.0.0.1:${TUTORIAL_PORT:-8080}:80"
+    volumes:
+      - ../tutorial:/var/www/html:ro
+    depends_on:
+      - mysql
+
+  python:
+    build:
+      context: ../common/python
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-school}
+      MYSQL_USER: ${MYSQL_USER:-student}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-studentpass}
+      MONGO_URI: mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=rs0
+    volumes:
+      - ../common/python/mysql_example.py:/workspace/mysql_example.py:ro
+      - ./examples/mongo_replica_example.py:/workspace/mongo/mongo_replica_example.py:ro
+    depends_on:
+      - mysql
+      - mongo1
+      - mongo2
+      - mongo3
+
+  mongo1:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo1_data:/data/db
+
+  mongo2:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - mongo2_data:/data/db
+
+  mongo3:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "127.0.0.1:27019:27017"
+    volumes:
+      - mongo3_data:/data/db
+
+  mongo-init:
+    image: mongo:7.0
+    restart: "no"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    volumes:
+      - ./mongo-init:/scripts:ro
+    entrypoint: ["bash", "/scripts/init-replica.sh"]
+
+volumes:
+  mysql_data:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:

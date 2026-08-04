@@ -1,0 +1,145 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-school}
+      MYSQL_USER: ${MYSQL_USER:-student}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-studentpass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../common/mysql/init:/docker-entrypoint-initdb.d:ro
+
+  phpmyadmin:
+    image: phpmyadmin:5.2-apache
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8081}:80"
+    depends_on:
+      - mysql
+
+  php:
+    build:
+      context: ../common/php
+    ports:
+      - "127.0.0.1:${TUTORIAL_PORT:-8080}:80"
+    volumes:
+      - ../tutorial:/var/www/html:ro
+    depends_on:
+      - mysql
+
+  python:
+    build:
+      context: ../common/python
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-school}
+      MYSQL_USER: ${MYSQL_USER:-student}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-studentpass}
+      MONGO_URI: mongodb://mongos:27017
+    volumes:
+      - ../common/python/mysql_example.py:/workspace/mysql_example.py:ro
+      - ./examples/mongo_sharding_example.py:/workspace/mongo/mongo_sharding_example.py:ro
+    depends_on:
+      - mysql
+      - mongos
+
+  config1:
+    image: mongo:7.0
+    command: ["mongod", "--configsvr", "--replSet", "configRS", "--bind_ip_all", "--port", "27019"]
+    volumes:
+      - config1_data:/data/configdb
+  config2:
+    image: mongo:7.0
+    command: ["mongod", "--configsvr", "--replSet", "configRS", "--bind_ip_all", "--port", "27019"]
+    volumes:
+      - config2_data:/data/configdb
+  config3:
+    image: mongo:7.0
+    command: ["mongod", "--configsvr", "--replSet", "configRS", "--bind_ip_all", "--port", "27019"]
+    volumes:
+      - config3_data:/data/configdb
+
+  shard1a:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS", "--bind_ip_all", "--port", "27018"]
+    volumes:
+      - shard1a_data:/data/db
+  shard1b:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS", "--bind_ip_all", "--port", "27018"]
+    volumes:
+      - shard1b_data:/data/db
+  shard1c:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS", "--bind_ip_all", "--port", "27018"]
+    volumes:
+      - shard1c_data:/data/db
+
+  shard2a:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS", "--bind_ip_all", "--port", "27018"]
+    volumes:
+      - shard2a_data:/data/db
+  shard2b:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS", "--bind_ip_all", "--port", "27018"]
+    volumes:
+      - shard2b_data:/data/db
+  shard2c:
+    image: mongo:7.0
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS", "--bind_ip_all", "--port", "27018"]
+    volumes:
+      - shard2c_data:/data/db
+
+  mongos:
+    image: mongo:7.0
+    command:
+      - mongos
+      - --configdb
+      - configRS/config1:27019,config2:27019,config3:27019
+      - --bind_ip_all
+      - --port
+      - "27017"
+    ports:
+      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
+    depends_on:
+      - config1
+      - config2
+      - config3
+
+  cluster-init:
+    image: mongo:7.0
+    restart: "no"
+    depends_on:
+      - config1
+      - config2
+      - config3
+      - shard1a
+      - shard1b
+      - shard1c
+      - shard2a
+      - shard2b
+      - shard2c
+      - mongos
+    volumes:
+      - ./mongo-init:/scripts:ro
+    entrypoint: ["bash", "/scripts/init-sharded-cluster.sh"]
+
+volumes:
+  mysql_data:
+  config1_data:
+  config2_data:
+  config3_data:
+  shard1a_data:
+  shard1b_data:
+  shard1c_data:
+  shard2a_data:
+  shard2b_data:
+  shard2c_data:
