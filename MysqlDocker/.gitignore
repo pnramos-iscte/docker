@@ -1,0 +1,4 @@
+.env
+exportacoes/*
+!exportacoes/.gitkeep
+.DS_Store

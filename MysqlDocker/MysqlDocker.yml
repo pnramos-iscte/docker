@@ -1,0 +1,47 @@
+name: mysql-docker
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql-aula
+    restart: unless-stopped
+    command:
+      - --local-infile=1
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-escola}
+      MYSQL_USER: ${MYSQL_USER:-aluno}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_dados:/var/lib/mysql
+      - ./inicializacao:/docker-entrypoint-initdb.d:ro
+      - ./exemplos:/exemplos:ro
+      # INTO OUTFILE só pode escrever na pasta segura do MySQL.
+      - ./exportacoes:/var/lib/mysql-files
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  phpmyadmin:
+    image: phpmyadmin:5.2-apache
+    container_name: phpmyadmin-aula
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8081}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_dados:
