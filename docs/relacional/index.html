@@ -9,7 +9,7 @@
   <style>
     :root{--navy:#102a43;--navy2:#183f5e;--teal:#087f8c;--mint:#dff4f1;--gold:#f2b134;--red:#c43d4d;--green:#168365;--paper:#f5f7f8;--white:#fff;--ink:#17212b;--muted:#607080;--line:#d8e0e6;--shadow:0 16px 40px rgba(16,42,67,.10)}
     *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}a{color:inherit}.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:13px max(20px,calc((100vw - 1240px)/2));background:rgba(16,42,67,.97);color:white;box-shadow:0 2px 14px #102a4320}.brand{font-weight:900;letter-spacing:.02em}.topbar nav{display:flex;gap:18px;overflow:auto;white-space:nowrap;font-size:14px}.topbar nav a{text-decoration:none;color:#d9e8f0}.progress{position:absolute;bottom:0;left:0;height:3px;background:var(--gold);width:0}
-    .hero{min-height:590px;background:var(--navy);color:white;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(380px,.9fr);gap:70px;align-items:center;padding:80px max(24px,calc((100vw - 1180px)/2))}.eyebrow{color:#75d5d7;font-weight:850;letter-spacing:.13em;text-transform:uppercase;font-size:13px}.hero h1{font-size:clamp(54px,8vw,96px);line-height:.9;letter-spacing:-.065em;margin:22px 0 28px;max-width:780px}.hero p{font-size:20px;color:#d2e3eb;max-width:700px}.start{display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:13px 19px;background:var(--gold);color:var(--navy);font-weight:900;text-decoration:none;border-radius:10px}.schema{position:relative;height:430px}.entity{position:absolute;width:210px;background:white;color:var(--ink);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.entity strong{display:block;padding:12px 16px;background:var(--teal);color:white}.entity span{display:block;padding:8px 16px;border-top:1px solid var(--line);font-family:ui-monospace,monospace;font-size:13px}.entity .pk{color:#a56800;font-weight:800}.entity .fk{color:var(--teal);font-weight:800}.entity.user{left:0;top:40px}.entity.post{right:0;bottom:40px}.relation{position:absolute;left:170px;top:210px;width:210px;border-top:4px solid var(--gold);transform:rotate(22deg)}.relation:after{content:"1 → N";position:absolute;left:72px;top:-38px;background:var(--navy);color:var(--gold);padding:3px 9px;font-weight:900;transform:rotate(-22deg)}
+    .hero{min-height:590px;background:var(--navy);color:white;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(380px,.9fr);gap:70px;align-items:center;padding:80px max(24px,calc((100vw - 1180px)/2))}.eyebrow{color:#75d5d7;font-weight:850;letter-spacing:.13em;text-transform:uppercase;font-size:13px}.author{display:inline-block;margin-top:10px;padding:5px 11px;border:1px solid #557086;border-radius:999px;color:white;font-size:14px;font-weight:800}.hero h1{font-size:clamp(54px,8vw,96px);line-height:.9;letter-spacing:-.065em;margin:22px 0 28px;max-width:780px}.hero p{font-size:20px;color:#d2e3eb;max-width:700px}.start{display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:13px 19px;background:var(--gold);color:var(--navy);font-weight:900;text-decoration:none;border-radius:10px}.schema{position:relative;height:430px}.entity{position:absolute;width:210px;background:white;color:var(--ink);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.entity strong{display:block;padding:12px 16px;background:var(--teal);color:white}.entity span{display:block;padding:8px 16px;border-top:1px solid var(--line);font-family:ui-monospace,monospace;font-size:13px}.entity .pk{color:#a56800;font-weight:800}.entity .fk{color:var(--teal);font-weight:800}.entity.user{left:0;top:40px}.entity.post{right:0;bottom:40px}.relation{position:absolute;left:170px;top:210px;width:210px;border-top:4px solid var(--gold);transform:rotate(22deg)}.relation:after{content:"N → 1";position:absolute;left:72px;top:-38px;background:var(--navy);color:var(--gold);padding:3px 9px;font-weight:900;transform:rotate(-22deg)}
     main{max-width:1180px;margin:auto;padding:0 24px 90px}.chapter{padding:82px 0;border-bottom:1px solid var(--line)}.chapter-head{display:grid;grid-template-columns:130px 1fr;gap:22px;margin-bottom:38px}.chapter-no{font-size:76px;line-height:1;color:var(--gold);font-weight:950;letter-spacing:-.06em}.chapter h2{font-size:clamp(34px,5vw,58px);line-height:1;letter-spacing:-.045em;margin:4px 0 12px;color:var(--navy)}.lede{font-size:19px;color:var(--muted);max-width:780px;margin:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{padding:24px;background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 20px #102a4308}.card h3{margin:0 0 9px;color:var(--navy);font-size:19px}.tag{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--mint);color:#076776;font-weight:850;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.callout{margin:28px 0;padding:20px 22px;border-left:5px solid var(--gold);background:#fff8e6;border-radius:0 12px 12px 0}.callout strong{color:var(--navy)}
     .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:white;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;min-width:680px}th,td{padding:13px 15px;text-align:left;border-bottom:1px solid var(--line)}th{background:var(--navy);color:white;font-size:13px;letter-spacing:.04em}tr:last-child td{border:0}td.key{background:#fff2c7;font-weight:850;color:#765000}td.foreign{background:var(--mint);font-weight:850;color:#076776}.caption{margin-top:10px;color:var(--muted);font-size:14px}.legend{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0}.legend span{display:flex;align-items:center;gap:7px;font-size:14px}.dot{width:13px;height:13px;border-radius:3px;background:#fff2c7;border:1px solid #e7ca67}.dot.fk{background:var(--mint);border-color:#83c8c4}
     .lab{margin-top:30px;padding:28px;background:var(--navy);color:white;border-radius:22px;box-shadow:var(--shadow)}.lab h3{font-size:25px;margin:0 0 5px}.lab>p{color:#cbdde5;margin-top:0}.controls{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}.choice{padding:10px 14px;border-radius:9px;border:1px solid #7690a4;background:#173b58;color:white;cursor:pointer;font-weight:800}.choice:hover,.choice.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}.result{min-height:70px;padding:16px 18px;border-radius:12px;background:#0a2135}.result.ok{border-left:5px solid #51d0a9}.result.bad{border-left:5px solid #ff7180}.result.warn{border-left:5px solid var(--gold)}
@@ -37,6 +37,7 @@
       <div class="eyebrow">
         Bases de Dados · tutorial interativo
       </div>
+      <div class="author">Autor: Pedro Ramos</div>
       <h1>Dados que se relacionam.</h1>
       <p>Aprenda a organizar informação em tabelas, a identificar cada registo e a criar relações sem perder a consistência dos dados.</p>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
@@ -45,11 +46,11 @@
     </div>
     <div class="schema" aria-label="Diagrama de duas tabelas relacionadas">
       <div class="entity user">
-        <strong>UTILIZADOR</strong><span class="pk">🔑 utilizador_id</span><span>nome</span><span>email</span>
+        <strong>UTILIZADOR</strong><span class="pk">🔑 utilizador_id</span><span>nome</span><span class="fk">↗ pais_id</span>
       </div>
       <div class="relation"></div>
       <div class="entity post">
-        <strong>POST</strong><span class="pk">🔑 post_id</span><span class="fk">↗ utilizador_id</span><span>texto</span>
+        <strong>PAÍS</strong><span class="pk">🔑 pais_id</span><span>nome</span><span>codigo_iso</span>
       </div>
     </div>
   </section>
@@ -440,7 +441,7 @@
         </div>
       </div>
       <div class="callout">
-        <strong>O domínio de uma chave estrangeira é especial.</strong> Não basta o valor ter o tipo de dados correto — neste exemplo, ser um número inteiro — ou ser <code>NULL</code> quando permitido. Em cada momento, o valor tem de existir no campo referenciado da outra tabela. Como UTILIZADOR contém agora os identificadores 101 e 102, esses são os valores válidos atuais para <code>POST.utilizador_id</code>. Se forem adicionados ou eliminados utilizadores, este conjunto também muda.
+        <strong>O domínio de uma chave estrangeira é especial.</strong> Não basta o valor ter o tipo de dados correto — neste exemplo, ser um número inteiro — ou ser <code>NULL</code> quando permitido. Em cada momento, o valor tem de existir no campo referenciado da outra tabela. Como PAÍS contém agora os identificadores 1, 2 e 3, esses são os valores válidos atuais para <code>UTILIZADOR.pais_id</code>. Se forem adicionados ou eliminados países, este conjunto também muda.
       </div>
       <div class="legend">
         <span>Chave primária</span><span> Chave estrangeira</span>
@@ -450,75 +451,80 @@
           <table>
             <thead>
               <tr>
+                <th colspan="3">PAÍS</th>
+              </tr>
+              <tr>
+                <th>pais_id</th>
+                <th>nome</th>
+                <th>codigo_iso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="key">1</td>
+                <td>Portugal</td>
+                <td>PT</td>
+              </tr>
+              <tr>
+                <td class="key">2</td>
+                <td>Brasil</td>
+                <td>BR</td>
+              </tr>
+              <tr>
+                <td class="key">3</td>
+                <td>Espanha</td>
+                <td>ES</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="relation-link">
+          <b>1 ─── N</b><span>um país<br>
+          muitos utilizadores</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
                 <th colspan="3">UTILIZADOR</th>
               </tr>
               <tr>
                 <th>utilizador_id</th>
                 <th>nome</th>
-                <th>país</th>
+                <th>pais_id</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td class="key">101</td>
                 <td>Ana</td>
-                <td>Portugal</td>
+                <td class="foreign">1</td>
               </tr>
               <tr>
                 <td class="key">102</td>
                 <td>Beatriz</td>
-                <td>Brasil</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="relation-link">
-          <b>1 ─── N</b><span>um utilizador<br>
-          muitos posts</span>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th colspan="3">POST</th>
+                <td class="foreign">2</td>
               </tr>
               <tr>
-                <th>post_id</th>
-                <th>utilizador_id</th>
-                <th>texto</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="key">501</td>
-                <td class="foreign">101</td>
-                <td>Bom dia!</td>
-              </tr>
-              <tr>
-                <td class="key">502</td>
-                <td class="foreign">101</td>
-                <td>Nova publicação</td>
-              </tr>
-              <tr>
-                <td class="key">503</td>
-                <td class="foreign">102</td>
-                <td>Olá!</td>
+                <td class="key">103</td>
+                <td>Carlos</td>
+                <td class="foreign">1</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
       <div class="callout">
-        <strong>O que significa 1–N?</strong> Do lado “1”, cada utilizador aparece uma vez em UTILIZADOR. Do lado “N”, o mesmo <code>utilizador_id</code> pode surgir em muitos posts: Ana (101) tem os posts 501 e 502. No sentido inverso, cada post referencia apenas um utilizador. O diagrama representa uma relação <strong>um-para-muitos</strong>.
+        <strong>O que significa 1–N?</strong> Do lado “1”, cada país aparece uma vez em PAÍS. Do lado “N”, o mesmo <code>pais_id</code> pode surgir em muitos utilizadores: Ana (101) e Carlos (103) têm <code>pais_id = 1</code>. No sentido inverso, cada utilizador referencia apenas um país. O diagrama representa uma relação <strong>um-para-muitos</strong>.
       </div>
       <div class="lab">
-        <h3>Teste o valor da chave estrangeira num novo post</h3>
-        <p>Vamos tentar inserir a linha <code>POST (504, ?, "Novo post")</code>. Clique no valor que pretende colocar no lugar de <code>?</code>. A base de dados irá verificar se esse valor pertence ao domínio atual da chave estrangeira.</p>
+        <h3>Teste o valor da chave estrangeira num novo utilizador</h3>
+        <p>Vamos tentar inserir a linha <code>UTILIZADOR (104, "Diana", ?)</code>. Clique no valor que pretende colocar no lugar de <code>?</code>. A base de dados irá verificar se esse valor pertence ao domínio atual de <code>pais_id</code>.</p>
         <div class="controls">
-          <button class="choice" data-user="101">Usar 101</button><button class="choice" data-user="102">Usar 102</button><button class="choice" data-user="999">Usar 999</button><button class="choice" data-user="null">Usar NULL</button>
+          <button class="choice" data-country="1">Usar 1 — Portugal</button><button class="choice" data-country="2">Usar 2 — Brasil</button><button class="choice" data-country="999">Usar 999</button><button class="choice" data-country="null">Usar NULL</button>
         </div>
         <div class="result warn" id="fkResult">
-          <strong>Linha proposta:</strong> POST (504, ?, "Novo post"). Escolha o valor de <code>utilizador_id</code>.
+          <strong>Linha proposta:</strong> UTILIZADOR (104, "Diana", ?). Escolha o valor de <code>pais_id</code>.
         </div>
       </div>
       <h3 style="color:var(--navy);font-size:27px;margin-top:42px">Usar uma tabela ou uma lista fixa?</h3>
@@ -547,149 +553,149 @@
         </div>
         <div>
           <h2>Integridade referencial: manter as duas tabelas coerentes</h2>
-          <p class="lede">Sem uma regra, alterar ou eliminar a chave na tabela UTILIZADOR pode deixar os posts a apontar para um utilizador que já não existe. UPDATE e DELETE são decisões diferentes.</p>
+          <p class="lede">Sem uma regra, alterar ou eliminar a chave na tabela PAÍS pode deixar utilizadores a apontar para um país que já não existe. UPDATE e DELETE são decisões diferentes.</p>
         </div>
       </div>
       <div class="rule-columns">
         <div class="rule-column">
           <h3>Quando a chave é alterada</h3>
-          <p class="caption">UTILIZADOR.utilizador_id muda de 101 para 110.</p>
+          <p class="caption">PAÍS.pais_id muda de 1 para 10.</p>
           <article class="rule-card">
             <h4>Sem proteção: fica incoerente</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>UTILIZADOR</b><span class="changed">110 · Ana</span>
+                <b>PAÍS</b><span class="changed">10 · Portugal</span>
               </div>
               <div class="rule-arrow">
                 →
               </div>
               <div class="tiny-table">
-                <b>POST</b><span class="broken">501 · utilizador 101</span><span class="broken">502 · utilizador 101</span>
+                <b>UTILIZADOR</b><span class="broken">101 · pais_id 1</span><span class="broken">103 · pais_id 1</span>
               </div>
             </div>
             <div class="incoherent">
-              Os posts continuam com 101, mas já não existe nenhum utilizador 101.
+              Os utilizadores continuam com pais_id 1, mas já não existe nenhum país 1.
             </div>
           </article>
           <article class="rule-card">
             <h4>ON UPDATE CASCADE</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>UTILIZADOR</b><span class="changed">110 · Ana</span>
+                <b>PAÍS</b><span class="changed">10 · Portugal</span>
               </div>
               <div class="rule-arrow">
                 →
               </div>
               <div class="tiny-table">
-                <b>POST</b><span class="changed">501 · utilizador 110</span><span class="changed">502 · utilizador 110</span>
+                <b>UTILIZADOR</b><span class="changed">101 · pais_id 10</span><span class="changed">103 · pais_id 10</span>
               </div>
             </div>
             <div class="coherent">
-              A alteração propaga-se. Os dois posts continuam ligados à Ana.
+              A alteração propaga-se. Ana e Carlos continuam ligados a Portugal.
             </div>
           </article>
           <article class="rule-card">
             <h4>ON UPDATE RESTRICT</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>TENTATIVA</b><span class="broken">101 → 110</span>
+                <b>TENTATIVA</b><span class="broken">pais_id 1 → 10</span>
               </div>
               <div class="rule-arrow">
                 →
               </div>
               <div class="tiny-table">
-                <b>RESULTADO</b><span>101 · Ana</span><span>Posts ainda em 101</span>
+                <b>RESULTADO</b><span>1 · Portugal</span><span>Utilizadores ainda em 1</span>
               </div>
             </div>
             <div class="coherent">
-              A base recusa a alteração enquanto houver posts a referenciar 101.
+              A base recusa a alteração enquanto houver utilizadores a referenciar o país 1.
             </div>
           </article>
           <article class="rule-card">
             <h4>ON UPDATE SET NULL</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>UTILIZADOR</b><span class="changed">110 · Ana</span>
+                <b>PAÍS</b><span class="changed">10 · Portugal</span>
               </div>
               <div class="rule-arrow">→</div>
               <div class="tiny-table">
-                <b>POST</b><span class="changed">501 · utilizador NULL</span><span class="changed">502 · utilizador NULL</span>
+                <b>UTILIZADOR</b><span class="changed">101 · pais_id NULL</span><span class="changed">103 · pais_id NULL</span>
               </div>
             </div>
             <div class="coherent">
-              Existe também: as referências passam a NULL. A FK tem de aceitar NULL e perde-se a associação dos posts à Ana.
+              Existe também: as referências passam a NULL. A FK tem de aceitar NULL e perde-se a associação de Ana e Carlos a Portugal.
             </div>
           </article>
         </div>
         <div class="rule-column">
           <h3>Quando a linha é eliminada</h3>
-          <p class="caption">Pretende-se eliminar o utilizador 101.</p>
+          <p class="caption">Pretende-se eliminar o país 1 — Portugal.</p>
           <article class="rule-card">
             <h4>Sem proteção: fica incoerente</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>UTILIZADOR</b><span class="gone">101 · eliminado</span>
+                <b>PAÍS</b><span class="gone">1 · Portugal eliminado</span>
               </div>
               <div class="rule-arrow">
                 →
               </div>
               <div class="tiny-table">
-                <b>POST</b><span class="broken">501 · utilizador 101</span><span class="broken">502 · utilizador 101</span>
+                <b>UTILIZADOR</b><span class="broken">101 · pais_id 1</span><span class="broken">103 · pais_id 1</span>
               </div>
             </div>
             <div class="incoherent">
-              Os posts passam a referenciar uma linha inexistente.
+              Ana e Carlos passam a referenciar um país inexistente.
             </div>
           </article>
           <article class="rule-card">
             <h4>ON DELETE CASCADE</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>UTILIZADOR</b><span class="gone">101 · eliminado</span>
+                <b>PAÍS</b><span class="gone">1 · Portugal eliminado</span>
               </div>
               <div class="rule-arrow">
                 →
               </div>
               <div class="tiny-table">
-                <b>POST</b><span class="gone">501 · eliminado</span><span class="gone">502 · eliminado</span>
+                <b>UTILIZADOR</b><span class="gone">101 · Ana eliminada</span><span class="gone">103 · Carlos eliminado</span>
               </div>
             </div>
             <div class="coherent">
-              São eliminados também os posts dependentes.
+              São eliminados também os utilizadores associados a Portugal — uma consequência normalmente perigosa neste caso.
             </div>
           </article>
           <article class="rule-card">
             <h4>ON DELETE RESTRICT</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>TENTATIVA</b><span class="broken">Eliminar 101</span>
+                <b>TENTATIVA</b><span class="broken">Eliminar país 1</span>
               </div>
               <div class="rule-arrow">
                 →
               </div>
               <div class="tiny-table">
-                <b>RESULTADO</b><span>101 · Ana</span><span>Posts preservados</span>
+                <b>RESULTADO</b><span>1 · Portugal preservado</span><span>Utilizadores preservados</span>
               </div>
             </div>
             <div class="coherent">
-              A eliminação é recusada enquanto existirem posts associados.
+              A eliminação é recusada enquanto existirem utilizadores associados ao país.
             </div>
           </article>
           <article class="rule-card">
             <h4>ON DELETE SET NULL</h4>
             <div class="rule-visual">
               <div class="tiny-table">
-                <b>UTILIZADOR</b><span class="gone">101 · eliminado</span>
+                <b>PAÍS</b><span class="gone">1 · Portugal eliminado</span>
               </div>
               <div class="rule-arrow">
                 →
               </div>
               <div class="tiny-table">
-                <b>POST</b><span class="changed">501 · utilizador NULL</span><span class="changed">502 · utilizador NULL</span>
+                <b>UTILIZADOR</b><span class="changed">101 · pais_id NULL</span><span class="changed">103 · pais_id NULL</span>
               </div>
             </div>
             <div class="coherent">
-              Os posts permanecem sem autor. A FK tem de aceitar NULL.
+              Os utilizadores permanecem sem país associado. A FK tem de aceitar NULL.
             </div>
           </article>
         </div>
@@ -782,7 +788,7 @@
     const progress=document.getElementById('progress');addEventListener('scroll',()=>{const h=document.documentElement;progress.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'});
     document.querySelectorAll('[data-key-choice]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-key-choice]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const r=document.getElementById('keyResult'),v=b.dataset.keyChoice;if(v==='hotel'){r.className='result bad';r.innerHTML='<strong>Não identifica.</strong> O hotel Sol aparece em mais do que uma linha.'}else if(v==='quarto'){r.className='result bad';r.innerHTML='<strong>Não identifica.</strong> O quarto 101 existe nos hotéis Sol e Mar.'}else if(v==='todas'){r.className='result warn';r.innerHTML='<strong>Os valores distinguem as linhas, mas há campos desnecessários.</strong> Uma chave deve ser mínima: hotel + quarto já chega.'}else{r.className='result ok';r.innerHTML='<strong>Correto: (hotel, quarto).</strong> Cada combinação aparece uma só vez e nenhum dos dois campos pode ser retirado.'}}));
     document.querySelectorAll('[data-chair]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-chair]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const r=document.getElementById('chairResult'),v=b.dataset.chair;if(v==='id'){r.className='result ok';r.innerHTML='<strong>Boa escolha: cadeira_id.</strong> Criamos um identificador artificial porque nenhum atributo natural é simultaneamente simples, estável e relevante.'}else if(v==='photo'){r.className='result bad';r.innerHTML='<strong>Má chave.</strong> Uma imagem é pesada, difícil de comparar exatamente e não deve ser repetida nas tabelas relacionadas.'}else if(v==='marks'){r.className='result bad';r.innerHTML='<strong>Má chave.</strong> Riscos e manchas mudam, são descritos de forma subjetiva e nem sequer precisamos de os guardar.'}else{r.className='result bad';r.innerHTML='<strong>Má chave.</strong> Sala e posição identificam o lugar, não a cadeira: deixam de funcionar quando ela é deslocada.'}}));
-    document.querySelectorAll('[data-user]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-user]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const r=document.getElementById('fkResult'),v=b.dataset.user;if(v==='999'){r.className='result bad';r.innerHTML='<strong>POST (504, 999, "Novo post") — inserção recusada.</strong> 999 é um número inteiro, mas não pertence ao domínio atual da chave estrangeira: não existe em UTILIZADOR.utilizador_id.'}else if(v==='null'){r.className='result warn';r.innerHTML='<strong>POST (504, NULL, "Novo post") — depende da definição.</strong> Só é aceite se POST.utilizador_id permitir NULL; nesse caso, o post fica sem utilizador associado.'}else{r.className='result ok';r.innerHTML=`<strong>POST (504, ${v}, "Novo post") — inserção aceite.</strong> ${v} existe em UTILIZADOR.utilizador_id e, por isso, pertence ao domínio atual da chave estrangeira.`}}));
+    document.querySelectorAll('[data-country]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-country]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const r=document.getElementById('fkResult'),v=b.dataset.country;if(v==='999'){r.className='result bad';r.innerHTML='<strong>UTILIZADOR (104, "Diana", 999) — inserção recusada.</strong> 999 é um número inteiro, mas não pertence ao domínio atual da chave estrangeira: não existe em PAÍS.pais_id.'}else if(v==='null'){r.className='result warn';r.innerHTML='<strong>UTILIZADOR (104, "Diana", NULL) — depende da definição.</strong> Só é aceite se UTILIZADOR.pais_id permitir NULL; nesse caso, Diana fica sem país associado.'}else{r.className='result ok';r.innerHTML=`<strong>UTILIZADOR (104, "Diana", ${v}) — inserção aceite.</strong> ${v} existe em PAÍS.pais_id e, por isso, pertence ao domínio atual da chave estrangeira.`}}));
     document.querySelectorAll('.question').forEach(q=>q.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{q.querySelectorAll('button').forEach(x=>x.classList.remove('correct','wrong'));const ok=b.dataset.v===q.dataset.answer;b.classList.add(ok?'correct':'wrong');q.querySelector('.feedback').textContent=ok?'Correto.':q.dataset.answer==='b'?'Não. A chave primária é que identifica cada registo.':q.dataset.answer==='c'?'Não. É necessária a combinação das duas colunas.':'Não. RESTRICT protege a referência impedindo a eliminação.'})));
   </script>
 </body>
