@@ -73,6 +73,9 @@
         block("Resolução de Pedro Ramos", answer.original),
         block("Solução revista", answer.reviewed),
       );
+      if (answer.noWith) {
+        target.append(block("Alternativa revista sem WITH", answer.noWith));
+      }
     }
     target.classList.toggle("open");
     button.textContent = target.classList.contains("open")
