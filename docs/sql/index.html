@@ -164,27 +164,59 @@ main{max-width:1140px;margin:auto;padding:0 24px 90px}.chapter{padding:78px 0;bo
 <div class="quiz"><h3>Pergunta malandra</h3><p>Se todas as chaves estrangeiras fossem obrigatórias, seria necessário usar <code>LEFT JOIN</code>?</p><button class="reveal" data-target="a-left">Ver resposta</button><div class="answer" id="a-left"><strong>Neste exemplo, normalmente não.</strong> Se <code>utilizador.pais_id</code> for <code>NOT NULL</code> e existir uma restrição de chave estrangeira válida, todos os utilizadores têm obrigatoriamente um país existente. Assim, o <code>INNER JOIN</code> já inclui todos os utilizadores e produz o mesmo resultado do <code>LEFT JOIN</code>.<br><br>Mas atenção: declarar apenas <code>NOT NULL</code> não basta. Isso impede a ausência de valor, mas só a restrição <code>FOREIGN KEY</code> garante que o valor corresponde realmente a uma linha da tabela <code>pais</code>.</div></div>
 <div class="quiz"><h3>Pergunta importante</h3><p>Onde deve ficar a condição que liga as tabelas?</p><button class="reveal" data-target="a3">Ver resposta</button><div class="answer" id="a3">Em <code>ON</code>. Sem uma condição correta, pode obter combinações sem significado ou um número enorme de linhas.</div></div></section>
 
-<section class="chapter" id="subconsultas"><div class="head"><div class="num">08</div><div><h2>Uma consulta dentro de outra</h2><p class="lede">Uma subconsulta calcula um valor ou um conjunto de valores que a consulta exterior utiliza.</p></div></div>
-<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome
-<span class="sql">FROM</span> utilizador
-<span class="sql">WHERE</span> pais_id <span class="sql">IN</span> (
-  <span class="sql">SELECT</span> pais_id
-  <span class="sql">FROM</span> pais
-  <span class="sql">WHERE</span> nome <span class="sql">IN</span> (<span class="str">'Portugal'</span>, <span class="str">'Brasil'</span>)
-);</pre></div><div class="explain"><h3>IN</h3><p>A consulta interior devolve os identificadores dos dois países. A consulta exterior encontra os utilizadores cujo país pertence a esse conjunto.</p></div><div class="result"><div class="result-title">Resultado</div><table><thead><tr><th>nome</th></tr></thead><tbody><tr><td>Ana Costa</td></tr><tr><td>Bruno Lima</td></tr><tr><td>Carla Sousa</td></tr><tr><td>Fábio Alves</td></tr></tbody></table></div></div>
+<section class="chapter" id="subconsultas"><div class="head"><div class="num">08</div><div><h2>Uma consulta dentro de outra</h2><p class="lede">Uma subconsulta é uma consulta usada por outra consulta. Nas subconsultas correlacionadas, uma imagem mental útil é um ciclo <code>for</code> dentro de outro <code>for</code>.</p></div></div>
+<div class="callout"><strong>A ideia dos dois ciclos:</strong> a consulta exterior escolhe uma linha de <code>utilizador</code>. Para essa linha, a consulta interior percorre linhas de <code>post</code>. Os dois ciclos têm de estar ligados: a consulta interior precisa de saber qual é o utilizador que está a ser tratado pela consulta exterior. Em SQL, essa ligação aparece numa condição como <code>p.utilizador_id = u.utilizador_id</code>.</div>
+<div class="code"><pre><span class="cm">-- Imagem mental; não é código SQL</span>
+<span class="sql">FOR</span> cada u <span class="sql">IN</span> utilizador          <span class="cm">-- ciclo exterior</span>
+  <span class="sql">FOR</span> cada p <span class="sql">IN</span> post              <span class="cm">-- ciclo interior</span>
+    <span class="sql">IF</span> p.utilizador_id = u.utilizador_id
+       foi encontrada uma correspondência</pre></div>
+<div class="data"><table><thead><tr><th>linha exterior</th><th>o ciclo interior procura</th><th>encontrou?</th><th>decisão</th></tr></thead><tbody><tr><td>Ana · 101</td><td>post com utilizador_id = 101</td><td>1001 e 1002</td><td>fica</td></tr><tr><td>Bruno · 102</td><td>post com utilizador_id = 102</td><td>1003</td><td>fica</td></tr><tr><td>Diogo · 104</td><td>post com utilizador_id = 104</td><td>nenhum</td><td>não fica</td></tr></tbody></table></div>
+<p class="caption">Esta é uma explicação conceptual. O otimizador do SGBD pode executar a consulta de uma forma mais eficiente, sem realizar literalmente estes ciclos.</p>
+<h3 style="font-size:28px;color:var(--navy);margin-top:45px">1. IN: comparar com uma lista produzida pela subconsulta</h3>
 <div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u.nome
-<span class="sql">FROM</span> utilizador u
+<span class="sql">FROM</span> utilizador AS u
+<span class="sql">WHERE</span> u.utilizador_id <span class="sql">IN</span> (
+  <span class="sql">SELECT</span> p.utilizador_id
+  <span class="sql">FROM</span> post AS p
+);</pre></div><div class="explain"><h3>Quem escreveu pelo menos um post?</h3><p>A consulta interior produz a lista <code>(101, 101, 102, 103, 106)</code>. Para cada utilizador, a consulta exterior pergunta se o seu identificador pertence a essa lista.</p><p>Esta subconsulta não precisa de consultar a linha exterior: pode ser compreendida começando pela consulta interior.</p></div><div class="result"><div class="result-title">Resultado com IN</div><table><thead><tr><th>nome</th></tr></thead><tbody><tr><td>Ana Costa</td></tr><tr><td>Bruno Lima</td></tr><tr><td>Carla Sousa</td></tr><tr><td>Fábio Alves</td></tr></tbody></table></div></div>
+<h3 style="font-size:28px;color:var(--navy);margin-top:45px">2. EXISTS: fazer a mesma pergunta com dois ciclos ligados</h3>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u.nome
+<span class="sql">FROM</span> utilizador AS u
 <span class="sql">WHERE EXISTS</span> (
   <span class="sql">SELECT</span> 1
-  <span class="sql">FROM</span> post p
+  <span class="sql">FROM</span> post AS p
   <span class="sql">WHERE</span> p.utilizador_id = u.utilizador_id
-);</pre></div><div class="explain"><h3>EXISTS</h3><p>Para cada utilizador, testa se existe pelo menos um post correspondente. O valor escrito no <code>SELECT</code> interior não interessa.</p></div><div class="result"><div class="result-title">Resultado</div><table><thead><tr><th>nome</th></tr></thead><tbody><tr><td>Ana Costa</td></tr><tr><td>Bruno Lima</td></tr><tr><td>Carla Sousa</td></tr><tr><td>Fábio Alves</td></tr></tbody></table></div></div>
-<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome, reputacao
-<span class="sql">FROM</span> utilizador
-<span class="sql">WHERE</span> reputacao &gt;= <span class="sql">ALL</span> (
-  <span class="sql">SELECT</span> reputacao
-  <span class="sql">FROM</span> utilizador
-);</pre></div><div class="explain"><h3>ALL</h3><p>A condição tem de ser verdadeira para todos os valores devolvidos. O exemplo encontra a reputação máxima, incluindo empates.</p></div><div class="result"><div class="result-title">Resultado</div><table><thead><tr><th>nome</th><th>reputacao</th></tr></thead><tbody><tr><td>Carla Sousa</td><td>91</td></tr></tbody></table></div></div></section>
+);</pre></div><div class="explain"><h3>O mesmo resultado com EXISTS</h3><p>Para cada linha <code>u</code>, a subconsulta procura uma linha <code>p</code> ligada ao utilizador atual. A igualdade é a “ponte” entre os dois ciclos.</p><p><code>EXISTS</code> pergunta apenas se foi encontrada pelo menos uma linha. Por isso, o <code>SELECT 1</code> não significa que queremos mostrar o número 1: o valor selecionado no interior não interessa.</p></div><div class="result"><div class="result-title">Resultado com EXISTS: igual ao de IN</div><table><thead><tr><th>nome</th></tr></thead><tbody><tr><td>Ana Costa</td></tr><tr><td>Bruno Lima</td></tr><tr><td>Carla Sousa</td></tr><tr><td>Fábio Alves</td></tr></tbody></table></div></div>
+<div class="callout"><strong>IN ou EXISTS?</strong> Neste problema, ambos exprimem corretamente a pergunta. <code>IN</code> é natural quando queremos comparar um valor com uma lista. <code>EXISTS</code> é especialmente claro quando queremos confirmar a existência de uma linha que satisfaz uma ou várias condições relacionadas com a linha exterior.</div>
+<h3 style="font-size:28px;color:var(--navy);margin-top:45px">3. Quando uma comparação IN simples já não chega</h3>
+<p>Queremos agora utilizadores que tenham escrito um post <strong>no mesmo ano em que se registaram</strong>. É necessário verificar simultaneamente dois valores: o identificador do utilizador e o ano.</p>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u.nome
+<span class="sql">FROM</span> utilizador AS u
+<span class="sql">WHERE</span> u.utilizador_id <span class="sql">IN</span> (
+  <span class="sql">SELECT</span> p.utilizador_id,
+         <span class="sql">YEAR</span>(p.publicado_em)
+  <span class="sql">FROM</span> post AS p
+);</pre></div><div class="explain"><h3>Erro: um valor contra duas colunas</h3><p>À esquerda de <code>IN</code> existe apenas <code>u.utilizador_id</code>. A subconsulta devolve duas colunas. O SQL não sabe comparar um valor com pares de valores.</p></div><div class="result"><div class="result-title" style="background:#ffe9ec;color:#8f2432">Erro devolvido pelo MySQL</div><div class="result-note"><code>ERROR 1241 (21000): Operand should contain 1 column(s)</code></div></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u.nome
+<span class="sql">FROM</span> utilizador AS u
+<span class="sql">WHERE EXISTS</span> (
+  <span class="sql">SELECT</span> 1
+  <span class="sql">FROM</span> post AS p
+  <span class="sql">WHERE</span> p.utilizador_id = u.utilizador_id
+    <span class="sql">AND YEAR</span>(p.publicado_em) = <span class="sql">YEAR</span>(u.data_registo)
+);</pre></div><div class="explain"><h3>EXISTS permite ligar vários campos</h3><p>A subconsulta sabe qual é a linha exterior através do sinónimo <code>u</code>. Pode, por isso, comparar o autor e o ano na mesma procura.</p><p>O primeiro <code>for</code> está na linha <code>u</code>; o segundo percorre <code>p</code> e usa os valores dessa linha <code>u</code> nas duas condições.</p></div><div class="result"><div class="result-title">Resultado</div><table><thead><tr><th>nome</th></tr></thead><tbody><tr><td>Ana Costa</td></tr><tr><td>Bruno Lima</td></tr><tr><td>Carla Sousa</td></tr><tr><td>Fábio Alves</td></tr></tbody></table></div></div>
+<div class="mistake"><strong>Nota para mais tarde:</strong> alguns SGBD, incluindo o MySQL, também aceitam pares de colunas com a sintaxe <code>(campo1, campo2) IN (SELECT campo1, campo2 ...)</code>. Contudo, um <code>IN</code> simples compara apenas uma expressão, e <code>EXISTS</code> torna normalmente mais visíveis as várias condições de ligação.</div>
+<h3 style="font-size:28px;color:var(--navy);margin-top:45px">4. Uma subconsulta sobre a própria tabela</h3>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u1.nome, u1.reputacao
+<span class="sql">FROM</span> utilizador AS u1
+<span class="sql">WHERE EXISTS</span> (
+  <span class="sql">SELECT</span> 1
+  <span class="sql">FROM</span> utilizador AS u2
+  <span class="sql">WHERE</span> u2.pais_id = u1.pais_id
+    <span class="sql">AND</span> u2.reputacao &gt; u1.reputacao
+);</pre></div><div class="explain"><h3>Quem tem alguém do mesmo país com reputação superior?</h3><p>A tabela <code>utilizador</code> participa duas vezes. Precisamos, por isso, de lhe dar dois sinónimos: <code>u1</code> é o utilizador exterior e <code>u2</code> é o possível outro utilizador.</p><p>Para cada <code>u1</code>, o ciclo interior percorre novamente a tabela como <code>u2</code>. As condições ligam os dois: mesmo país e reputação superior.</p></div><div class="result"><div class="result-title">Resultado</div><table><thead><tr><th>nome</th><th>reputacao</th><th>quem tem mais no mesmo país</th></tr></thead><tbody><tr><td>Ana Costa</td><td>82</td><td>Carla Sousa · 91</td></tr><tr><td>Bruno Lima</td><td>57</td><td>Fábio Alves · 74</td></tr></tbody></table></div></div>
+<div class="quiz"><h3>Verifique a ligação</h3><p>O que aconteceria se retirássemos <code>u2.pais_id = u1.pais_id</code>?</p><button class="reveal" data-target="a-sub">Ver resposta</button><div class="answer" id="a-sub">A consulta deixaria de procurar alguém <em>do mesmo país</em>. Bastaria existir em toda a tabela qualquer pessoa com reputação superior. Os dois ciclos continuariam ligados apenas pela reputação, mas já não responderiam à pergunta pretendida.</div></div></section>
 
 <section class="chapter" id="union"><div class="head"><div class="num">09</div><div><h2>Juntar resultados com UNION</h2><p class="lede"><code>UNION</code> coloca as linhas de uma consulta por baixo das linhas de outra. As consultas precisam do mesmo número de colunas e de tipos compatíveis.</p></div></div>
 <div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome, <span class="str">'utilizador'</span> AS origem
