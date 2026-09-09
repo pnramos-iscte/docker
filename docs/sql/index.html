@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Tutorial de SQL para principiantes, com exemplos progressivos em MySQL.">
+<title>SQL desde o princípio — Pedro Ramos</title>
+<style>
+:root{--navy:#102a43;--navy2:#173f5f;--teal:#087f8c;--gold:#f2b134;--paper:#f5f7f8;--white:#fff;--ink:#17212b;--muted:#607080;--line:#d7e0e6;--green:#168365;--red:#bd3d4c;--code:#091d2d;--shadow:0 14px 36px #102a4312}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:76px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit}.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:13px max(20px,calc((100vw - 1180px)/2));background:#102a43f7;color:white;box-shadow:0 2px 15px #0002}.brand{font-weight:950;letter-spacing:.08em}.top nav{display:flex;gap:18px;overflow:auto;white-space:nowrap;font-size:13px}.top nav a{color:#d7e8ef;text-decoration:none}.progress{position:absolute;left:0;bottom:0;width:0;height:3px;background:var(--gold)}
+.hero{background:var(--navy);color:white;min-height:610px;display:grid;grid-template-columns:1.08fr .92fr;gap:70px;align-items:center;padding:80px max(24px,calc((100vw - 1140px)/2));overflow:hidden}.eyebrow{color:#77d5d4;font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.author{display:inline-block;margin-top:9px;padding:4px 11px;border:1px solid #5e788d;border-radius:999px;font-size:14px;font-weight:800}.hero h1{font-size:clamp(58px,9vw,104px);line-height:.86;letter-spacing:-.07em;margin:25px 0}.hero p{font-size:20px;color:#d5e5ec;max-width:650px}.start,.download{display:inline-flex;margin:16px 10px 0 0;padding:12px 17px;border-radius:9px;text-decoration:none;font-weight:900;background:var(--gold);color:var(--navy)}.download{background:white}.query-map{background:#081c2b;border:1px solid #31546b;border-radius:22px;padding:26px;box-shadow:0 25px 70px #0004;transform:rotate(1deg)}.query-map code{font:700 18px/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;color:#deedf3}.kw,.sql{color:#79dcdf;font-weight:850}.val,.str{color:#f7c961}.cm{color:#7892a3}
+main{max-width:1140px;margin:auto;padding:0 24px 90px}.chapter{padding:78px 0;border-bottom:1px solid var(--line)}.head{display:grid;grid-template-columns:110px 1fr;gap:24px;margin-bottom:34px}.num{font-size:66px;line-height:1;color:var(--gold);font-weight:950;letter-spacing:-.06em}.chapter h2{margin:3px 0 10px;color:var(--navy);font-size:clamp(34px,5vw,56px);line-height:1;letter-spacing:-.045em}.lede{font-size:19px;color:var(--muted);max-width:800px;margin:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{padding:23px;background:white;border:1px solid var(--line);border-radius:15px;box-shadow:0 5px 22px #102a4308}.card h3{margin:0 0 8px;color:var(--navy)}.card p{margin:0;color:var(--muted)}.tag{display:block;color:var(--teal);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+.data{overflow:auto;background:white;border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;min-width:660px}th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line)}th{background:var(--navy);color:white;font-size:13px}tr:last-child td{border-bottom:0}.pk{background:#fff0bf;font-weight:850}.fk{background:#dff4f1;color:#076a73;font-weight:850}.null{color:#8b969e;font-style:italic}
+.lesson{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;margin:28px 0}.code{background:var(--code);color:#dcebf2;border-radius:14px;padding:21px 22px;overflow:auto;box-shadow:var(--shadow)}.code pre{margin:0;font:15px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}.explain{background:white;border-left:5px solid var(--teal);border-radius:0 13px 13px 0;padding:20px 22px}.explain h3{margin:0 0 7px;color:var(--navy)}.explain p{margin:0}.explain p+p{margin-top:9px}.callout{margin:25px 0;padding:19px 22px;background:#fff8e5;border-left:5px solid var(--gold);border-radius:0 12px 12px 0}.callout strong{color:var(--navy)}
+.operators{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.op{background:white;border:1px solid var(--line);border-radius:11px;padding:13px 15px}.op code{color:var(--teal);font-weight:900}.mistake{background:#ffe9ec;border-left:5px solid var(--red);padding:18px 20px;border-radius:0 12px 12px 0}.mistake strong{color:#8f2432}.anatomy{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:28px 0}.part{padding:16px 9px;text-align:center;color:white;background:var(--navy2);border-radius:9px;font-family:ui-monospace,monospace}.part b{display:block;color:var(--gold);font:900 12px/1.2 Inter,sans-serif;margin-bottom:7px}.part.optional{background:#31556d}
+.diagram{display:grid;grid-template-columns:1fr 110px 1fr;align-items:center;gap:18px;margin:25px 0}.entity{background:white;border:1px solid var(--line);border-radius:14px;overflow:hidden}.entity strong{display:block;background:var(--navy);color:white;padding:11px 15px}.entity span{display:block;padding:7px 15px;border-top:1px solid var(--line);font-family:ui-monospace,monospace;font-size:13px}.link{text-align:center;color:var(--teal);font-weight:900}.link b{display:block;font-size:42px;line-height:1}.quiz{margin-top:27px;background:var(--navy);color:white;border-radius:18px;padding:25px}.quiz h3{margin:0 0 6px;color:var(--gold)}.quiz p{color:#d6e5ec}.reveal{border:1px solid #7590a3;background:#173f5f;color:white;border-radius:9px;padding:9px 13px;font:inherit;font-weight:800;cursor:pointer}.reveal:hover{background:var(--gold);color:var(--navy)}.answer{display:none;margin-top:14px;padding:14px 16px;background:#071a28;border-radius:10px}.answer.show{display:block}.answer code{color:#75dce0}.steps{counter-reset:step;display:grid;gap:13px}.steps li{list-style:none;position:relative;padding:17px 18px 17px 62px;background:white;border:1px solid var(--line);border-radius:12px}.steps li:before{counter-increment:step;content:counter(step);position:absolute;left:17px;top:15px;width:32px;height:32px;border-radius:50%;background:var(--teal);color:white;display:grid;place-content:center;font-weight:900}.summary{background:var(--navy);color:white;margin-top:70px;border-radius:24px;padding:38px}.summary h2{color:white}.summary .grid{margin-top:22px}.summary .card{background:#173f5f;border-color:#315a73}.summary .card h3{color:var(--gold)}.summary .card p{color:#d4e3ea}footer{text-align:center;color:var(--muted);padding:35px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;min-height:auto}.head{grid-template-columns:75px 1fr}.num{font-size:48px}.lesson,.diagram{grid-template-columns:1fr}.link b{transform:rotate(90deg)}.grid{grid-template-columns:1fr 1fr}.anatomy{grid-template-columns:repeat(3,1fr)}}@media(max-width:620px){.top nav{display:none}.hero h1{font-size:64px}.grid,.operators{grid-template-columns:1fr}.head{grid-template-columns:1fr}.num{font-size:34px}.anatomy{grid-template-columns:1fr 1fr}.query-map code{font-size:14px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">SQL · DO ZERO</div><nav><a href="#dados">Dados</a><a href="#select">SELECT</a><a href="#where">WHERE</a><a href="#agregar">Agregação</a><a href="#join">JOIN</a><a href="#subconsultas">Subconsultas</a><a href="#union">UNION</a></nav><div class="progress" id="progress"></div></header>
+<section class="hero"><div><div class="eyebrow">Tutorial para principiantes</div><div class="author">Autor: Pedro Ramos</div><h1>SQL desde o princípio</h1><p>Aprenda a fazer perguntas a uma base de dados. Cada consulta parte da anterior, para que perceba o que cada palavra acrescenta ao resultado.</p><a class="start" href="#dados">Começar ↓</a><a class="download" href="exemplos.sql" download>Descarregar base de exemplo</a></div><div class="query-map"><code><span class="cm">-- Quem publicou mais do que uma vez?</span><br><span class="kw">SELECT</span> u.nome, <span class="kw">COUNT</span>(*) AS total<br><span class="kw">FROM</span> utilizador u<br><span class="kw">JOIN</span> post p<br>&nbsp; <span class="kw">ON</span> p.utilizador_id = u.utilizador_id<br><span class="kw">GROUP BY</span> u.utilizador_id, u.nome<br><span class="kw">HAVING COUNT</span>(*) &gt; <span class="val">1</span>;</code></div></section>
+<main>
+<section class="chapter" id="dados"><div class="head"><div class="num">00</div><div><h2>Antes do SQL</h2><p class="lede">Uma base de dados contém tabelas. Uma tabela tem colunas, que definem a estrutura, e linhas, que guardam ocorrências concretas.</p></div></div>
+<div class="grid"><article class="card"><span class="tag">Tabela</span><h3>utilizador</h3><p>Guarda uma linha por utilizador.</p></article><article class="card"><span class="tag">Coluna</span><h3>nome</h3><p>Indica que informação existe em todas as linhas.</p></article><article class="card"><span class="tag">Valor</span><h3>Ana Costa</h3><p>É o conteúdo de uma coluna numa linha concreta.</p></article></div>
+<div class="data" style="margin-top:24px"><table><thead><tr><th>utilizador_id</th><th>nome</th><th>email</th><th>pais_id</th><th>estado</th><th>reputacao</th></tr></thead><tbody><tr><td class="pk">101</td><td>Ana Costa</td><td>ana@example.test</td><td class="fk">1</td><td>ativo</td><td>82</td></tr><tr><td class="pk">102</td><td>Bruno Lima</td><td>bruno@example.test</td><td class="fk">2</td><td>ativo</td><td>57</td></tr><tr><td class="pk">103</td><td>Carla Sousa</td><td>carla@example.test</td><td class="fk">1</td><td>inativo</td><td>91</td></tr><tr><td class="pk">104</td><td>Diogo Martins</td><td>diogo@example.test</td><td class="fk">3</td><td>ativo</td><td>38</td></tr><tr><td class="pk">105</td><td>Eva Rocha</td><td>eva@example.test</td><td class="null">NULL</td><td>ativo</td><td>57</td></tr></tbody></table></div>
+<div class="callout"><strong>Como executar exemplos:</strong> abra o separador SQL do phpMyAdmin, escreva ou cole a consulta e carregue em Executar. Cada instrução termina com <code>;</code>.</div></section>
+
+<section class="chapter" id="select"><div class="head"><div class="num">01</div><div><h2>A primeira consulta</h2><p class="lede"><code>SELECT</code> indica as colunas que quer ver. <code>FROM</code> indica a tabela onde os dados estão.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome, email
+<span class="sql">FROM</span> utilizador;</pre></div><div class="explain"><h3>Leia em linguagem corrente</h3><p>“Mostra as colunas <strong>nome</strong> e <strong>email</strong> da tabela <strong>utilizador</strong>.”</p><p>A ordem das colunas no resultado segue a ordem escrita no <code>SELECT</code>.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> *
+<span class="sql">FROM</span> utilizador;</pre></div><div class="explain"><h3>O asterisco</h3><p><code>*</code> significa “todas as colunas”. É útil para explorar uma tabela pequena. Em consultas reais, prefira indicar as colunas necessárias.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome AS utilizador,
+       reputacao AS pontos
+<span class="sql">FROM</span> utilizador;</pre></div><div class="explain"><h3>Nomes no resultado</h3><p><code>AS</code> cria um nome temporário para a coluna apresentada. Não altera a tabela.</p></div></div>
+<div class="quiz"><h3>Teste rápido</h3><p>Que consulta mostra apenas o email de todos os utilizadores?</p><button class="reveal" data-target="a1">Ver resposta</button><div class="answer" id="a1"><code>SELECT email FROM utilizador;</code></div></div></section>
+
+<section class="chapter" id="distinct"><div class="head"><div class="num">02</div><div><h2>Valores distintos e contagens</h2><p class="lede">Uma coluna pode repetir valores. <code>DISTINCT</code> remove repetições do resultado. <code>COUNT</code> conta linhas ou valores.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT DISTINCT</span> pais_id
+<span class="sql">FROM</span> utilizador;</pre></div><div class="explain"><h3>Uma vez cada valor</h3><p>Com <code>DISTINCT</code>, cada <code>pais_id</code> surge apenas uma vez no resultado.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT COUNT</span>(*) AS total
+<span class="sql">FROM</span> utilizador;</pre></div><div class="explain"><h3>Contar linhas</h3><p><code>COUNT(*)</code> conta todas as linhas. <code>COUNT(pais_id)</code> ignora linhas onde <code>pais_id</code> é <code>NULL</code>.</p></div></div>
+<div class="mistake"><strong>Atenção:</strong> <code>SELECT DISTINCT pais_id, estado</code> remove pares repetidos. Não escolhe valores distintos de cada coluna separadamente.</div></section>
+
+<section class="chapter" id="where"><div class="head"><div class="num">03</div><div><h2>Filtrar linhas com WHERE</h2><p class="lede"><code>WHERE</code> define uma condição. Só as linhas para as quais a condição é verdadeira chegam ao resultado.</p></div></div>
+<div class="operators"><div class="op"><code>=</code> igual</div><div class="op"><code>&lt;&gt;</code> diferente</div><div class="op"><code>&gt; &nbsp; &gt;= &nbsp; &lt; &nbsp; &lt;=</code> comparações</div><div class="op"><code>AND / OR / NOT</code> combinar condições</div><div class="op"><code>IN (...)</code> pertence a uma lista</div><div class="op"><code>BETWEEN ... AND ...</code> intervalo inclusivo</div><div class="op"><code>LIKE</code> compara com um padrão</div><div class="op"><code>IS NULL</code> procura ausência de valor</div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome, reputacao
+<span class="sql">FROM</span> utilizador
+<span class="sql">WHERE</span> estado = <span class="str">'ativo'</span>
+  <span class="sql">AND</span> reputacao &gt;= 60;</pre></div><div class="explain"><h3>Texto entre plicas</h3><p>Valores de texto e datas escrevem-se entre plicas. Números não precisam de plicas. As duas condições têm de ser verdadeiras porque usamos <code>AND</code>.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome
+<span class="sql">FROM</span> utilizador
+<span class="sql">WHERE</span> nome <span class="sql">LIKE</span> <span class="str">'A%'</span>;</pre></div><div class="explain"><h3>Padrões com LIKE</h3><p><code>%</code> representa zero ou mais caracteres. <code>_</code> representa exatamente um carácter. O exemplo encontra nomes iniciados por A.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome
+<span class="sql">FROM</span> utilizador
+<span class="sql">WHERE</span> pais_id <span class="sql">IS NULL</span>;</pre></div><div class="explain"><h3>NULL requer cuidado</h3><p>Use <code>IS NULL</code> ou <code>IS NOT NULL</code>. A expressão <code>= NULL</code> não funciona como uma comparação normal.</p></div></div>
+<div class="quiz"><h3>Teste rápido</h3><p>Utilizadores ativos com reputação entre 50 e 80, inclusive.</p><button class="reveal" data-target="a2">Ver resposta</button><div class="answer" id="a2"><code>SELECT * FROM utilizador WHERE estado = 'ativo' AND reputacao BETWEEN 50 AND 80;</code></div></div></section>
+
+<section class="chapter" id="ordenar"><div class="head"><div class="num">04</div><div><h2>Ordenar o resultado</h2><p class="lede"><code>ORDER BY</code> ordena as linhas. <code>ASC</code> é crescente e <code>DESC</code> é decrescente.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome, reputacao
+<span class="sql">FROM</span> utilizador
+<span class="sql">ORDER BY</span> reputacao <span class="sql">DESC</span>,
+         nome <span class="sql">ASC</span>;</pre></div><div class="explain"><h3>Mais do que um critério</h3><p>Primeiro ordena pela reputação. Quando duas pessoas têm a mesma reputação, ordena esses nomes alfabeticamente.</p></div></div>
+<div class="callout"><strong>LIMIT:</strong> em MySQL, acrescente <code>LIMIT 3</code> no fim para obter apenas as três primeiras linhas do resultado já ordenado.</div></section>
+
+<section class="chapter" id="agregar"><div class="head"><div class="num">05</div><div><h2>Resumir dados</h2><p class="lede">As funções <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code> e <code>MAX</code> transformam várias linhas num resultado resumido.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> estado,
+       <span class="sql">COUNT</span>(*) AS total,
+       <span class="sql">AVG</span>(reputacao) AS media
+<span class="sql">FROM</span> utilizador
+<span class="sql">GROUP BY</span> estado;</pre></div><div class="explain"><h3>Uma linha por grupo</h3><p><code>GROUP BY estado</code> forma um grupo para os ativos e outro para os inativos. Cada grupo produz uma linha no resultado.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> pais_id, <span class="sql">COUNT</span>(*) AS total
+<span class="sql">FROM</span> utilizador
+<span class="sql">GROUP BY</span> pais_id
+<span class="sql">HAVING COUNT</span>(*) &gt; 1;</pre></div><div class="explain"><h3>WHERE e HAVING</h3><p><code>WHERE</code> filtra linhas antes de agrupar. <code>HAVING</code> filtra grupos depois de calcular a agregação.</p></div></div>
+<div class="mistake"><strong>Erro frequente:</strong> ao usar <code>GROUP BY</code>, cada coluna simples do <code>SELECT</code> deve identificar o grupo. As restantes expressões devem usar funções de agregação.</div></section>
+
+<section class="chapter" id="ordem"><div class="head"><div class="num">06</div><div><h2>A ordem das cláusulas</h2><p class="lede">A consulta escreve-se numa ordem fixa. Pensar na ordem lógica ajuda a perceber o resultado.</p></div></div>
+<div class="anatomy"><div class="part"><b>1</b>SELECT</div><div class="part"><b>2</b>FROM / JOIN</div><div class="part optional"><b>3</b>WHERE</div><div class="part optional"><b>4</b>GROUP BY</div><div class="part optional"><b>5</b>HAVING</div><div class="part optional"><b>6</b>ORDER BY</div></div>
+<div class="callout"><strong>Ordem lógica simplificada:</strong> o servidor começa por <code>FROM</code>, aplica <code>WHERE</code>, forma grupos, aplica <code>HAVING</code>, calcula o <code>SELECT</code> e ordena no fim.</div></section>
+
+<section class="chapter" id="join"><div class="head"><div class="num">07</div><div><h2>Combinar tabelas</h2><p class="lede">Um <code>JOIN</code> associa linhas através de valores correspondentes. A condição <code>ON</code> diz ao servidor como fazer essa associação.</p></div></div>
+<div class="diagram"><div class="entity"><strong>UTILIZADOR</strong><span class="pk">PK utilizador_id</span><span>nome</span><span class="fk">FK pais_id</span></div><div class="link"><b>↔</b>pais_id</div><div class="entity"><strong>PAIS</strong><span class="pk">PK pais_id</span><span>nome</span></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u.nome,
+       p.nome AS pais
+<span class="sql">FROM</span> utilizador AS u
+<span class="sql">JOIN</span> pais AS p
+  <span class="sql">ON</span> p.pais_id = u.pais_id;</pre></div><div class="explain"><h3>INNER JOIN</h3><p><code>JOIN</code> e <code>INNER JOIN</code> significam o mesmo. Só aparecem utilizadores que têm um país correspondente. Os prefixos <code>u.</code> e <code>p.</code> indicam a tabela.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u.nome,
+       p.nome AS pais
+<span class="sql">FROM</span> utilizador AS u
+<span class="sql">LEFT JOIN</span> pais AS p
+  <span class="sql">ON</span> p.pais_id = u.pais_id;</pre></div><div class="explain"><h3>LEFT JOIN</h3><p>Mostra todos os utilizadores, mesmo quando não têm país. Nesse caso, as colunas de <code>pais</code> aparecem com <code>NULL</code>.</p></div></div>
+<div class="quiz"><h3>Pergunta importante</h3><p>Onde deve ficar a condição que liga as tabelas?</p><button class="reveal" data-target="a3">Ver resposta</button><div class="answer" id="a3">Em <code>ON</code>. Sem uma condição correta, pode obter combinações sem significado ou um número enorme de linhas.</div></div></section>
+
+<section class="chapter" id="subconsultas"><div class="head"><div class="num">08</div><div><h2>Uma consulta dentro de outra</h2><p class="lede">Uma subconsulta calcula um valor ou um conjunto de valores que a consulta exterior utiliza.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome
+<span class="sql">FROM</span> utilizador
+<span class="sql">WHERE</span> pais_id <span class="sql">IN</span> (
+  <span class="sql">SELECT</span> pais_id
+  <span class="sql">FROM</span> pais
+  <span class="sql">WHERE</span> nome <span class="sql">IN</span> (<span class="str">'Portugal'</span>, <span class="str">'Brasil'</span>)
+);</pre></div><div class="explain"><h3>IN</h3><p>A consulta interior devolve os identificadores dos dois países. A consulta exterior encontra os utilizadores cujo país pertence a esse conjunto.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> u.nome
+<span class="sql">FROM</span> utilizador u
+<span class="sql">WHERE EXISTS</span> (
+  <span class="sql">SELECT</span> 1
+  <span class="sql">FROM</span> post p
+  <span class="sql">WHERE</span> p.utilizador_id = u.utilizador_id
+);</pre></div><div class="explain"><h3>EXISTS</h3><p>Para cada utilizador, testa se existe pelo menos um post correspondente. O valor escrito no <code>SELECT</code> interior não interessa.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome, reputacao
+<span class="sql">FROM</span> utilizador
+<span class="sql">WHERE</span> reputacao &gt;= <span class="sql">ALL</span> (
+  <span class="sql">SELECT</span> reputacao
+  <span class="sql">FROM</span> utilizador
+);</pre></div><div class="explain"><h3>ALL</h3><p>A condição tem de ser verdadeira para todos os valores devolvidos. O exemplo encontra a reputação máxima, incluindo empates.</p></div></div></section>
+
+<section class="chapter" id="union"><div class="head"><div class="num">09</div><div><h2>Juntar resultados com UNION</h2><p class="lede"><code>UNION</code> coloca as linhas de uma consulta por baixo das linhas de outra. As consultas precisam do mesmo número de colunas e de tipos compatíveis.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> nome, <span class="str">'utilizador'</span> AS origem
+<span class="sql">FROM</span> utilizador
+<span class="sql">UNION</span>
+<span class="sql">SELECT</span> nome, <span class="str">'país'</span> AS origem
+<span class="sql">FROM</span> pais;</pre></div><div class="explain"><h3>UNION ou UNION ALL</h3><p><code>UNION</code> elimina linhas duplicadas. <code>UNION ALL</code> mantém todas as linhas e costuma ser mais rápido.</p></div></div>
+<div class="mistake"><strong>Não confundir:</strong> <code>JOIN</code> acrescenta colunas ao relacionar tabelas. <code>UNION</code> acrescenta linhas ao combinar resultados compatíveis.</div></section>
+
+<section class="chapter" id="exportar"><div class="head"><div class="num">10</div><div><h2>Guardar o resultado</h2><p class="lede">No phpMyAdmin, execute a consulta e use a opção Exportar junto ao resultado. O formato CSV abre facilmente numa folha de cálculo.</p></div></div>
+<ol class="steps"><li>Execute a consulta e confirme que as colunas e linhas estão corretas.</li><li>Na zona do resultado, escolha <strong>Exportar</strong>.</li><li>Escolha <strong>CSV</strong>, confirme o separador e descarregue o ficheiro.</li></ol>
+<div class="callout"><strong>Boa prática:</strong> dê nomes claros às colunas com <code>AS</code> antes de exportar. Esses nomes serão os cabeçalhos do ficheiro.</div></section>
+
+<section class="summary"><h2>O mapa completo</h2><p>Transforme o problema em perguntas pequenas e construa a consulta por etapas.</p><div class="grid"><article class="card"><h3>Que colunas?</h3><p><code>SELECT</code></p></article><article class="card"><h3>De que tabelas?</h3><p><code>FROM</code> e <code>JOIN</code></p></article><article class="card"><h3>Que linhas?</h3><p><code>WHERE</code></p></article><article class="card"><h3>Que grupos?</h3><p><code>GROUP BY</code></p></article><article class="card"><h3>Que grupos ficam?</h3><p><code>HAVING</code></p></article><article class="card"><h3>Em que ordem?</h3><p><code>ORDER BY</code></p></article></div></section>
+</main>
+<footer>SQL desde o princípio · Autor: Pedro Ramos</footer>
+<script>
+document.querySelectorAll('.reveal').forEach(button=>button.addEventListener('click',()=>{const answer=document.getElementById(button.dataset.target);answer.classList.toggle('show');button.textContent=answer.classList.contains('show')?'Esconder resposta':'Ver resposta'}));
+const progress=document.getElementById('progress');addEventListener('scroll',()=>{const d=document.documentElement;progress.style.width=(100*d.scrollTop/(d.scrollHeight-d.clientHeight))+'%'},{passive:true});
+</script>
+</body>
+</html>
+
