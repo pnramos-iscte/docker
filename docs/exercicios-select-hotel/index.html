@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Exercícios SELECT · Hotel · Pedro Ramos</title><meta name="description" content="Exercícios SELECT sobre uma base de dados de hotéis, com resultados esperados e soluções SQL."><style>:root{--navy:#102a43;--teal:#087f8c;--cyan:#45bcc4;--gold:#f2b134;--paper:#f4f7f8;--white:#fff;--ink:#17212b;--muted:#5f6f7d;--line:#d5e0e5;--green:#13795b;--rose:#fff0e7}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.58 system-ui,-apple-system,"Segoe UI",sans-serif}.top{position:sticky;top:0;z-index:4;background:rgba(16,42,67,.97);color:white;padding:14px max(22px,calc((100vw - 1120px)/2));display:flex;justify-content:space-between;align-items:center}.top a{color:#d9eef1;text-decoration:none;font-weight:800}.hero{background:var(--navy);color:white;padding:65px max(24px,calc((100vw - 1120px)/2)) 70px}.eyebrow{color:var(--cyan);font-weight:900;letter-spacing:.15em;font-size:13px}.author{color:#c6d8e2;font-weight:700;margin:8px 0 16px}.hero h1{font-size:clamp(48px,7vw,82px);line-height:1;margin:0 0 20px}.hero p{max-width:780px;font-size:21px;color:#d6e4eb}.download{display:inline-block;margin:14px 9px 0 0;padding:12px 17px;border:1px solid #77cad0;border-radius:8px;color:white;text-decoration:none;font-weight:900}.overview{max-width:1120px;margin:34px auto;padding:0 24px}.schema{background:white;border:1px solid var(--line);border-top:7px solid var(--teal);border-radius:16px;padding:26px}.schema h2{color:var(--navy);margin-top:0}.tables{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.table{padding:14px;border-radius:9px;background:#e8f1f3;font-weight:800;color:var(--navy);text-align:center}.legend{color:var(--muted)}main{max-width:1120px;margin:auto;padding:20px 24px 90px}.exercise{display:grid;grid-template-columns:75px 1fr;gap:20px;background:white;border:1px solid var(--line);border-radius:15px;padding:26px;margin:24px 0}.n{font-size:28px;font-weight:950;color:var(--teal)}h2{margin:0 0 20px;color:var(--navy);font-size:27px;line-height:1.25}h3{font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}pre{white-space:pre-wrap;overflow:auto;font:15px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;border-radius:10px;padding:18px}.result{background:#edf6f5;border-left:5px solid var(--green)}.solution{display:none;background:#0d2235;color:#eef8fa;margin-top:14px}.solution.open{display:block}.show{border:0;background:var(--navy);color:white;padding:11px 16px;border-radius:7px;font-weight:850;cursor:pointer}.note{background:var(--rose);border-left:5px solid var(--gold);padding:13px 16px;border-radius:5px}.footer{background:var(--navy);color:#d6e4eb;padding:35px;text-align:center}@media(max-width:760px){.tables{grid-template-columns:1fr 1fr}.exercise{grid-template-columns:1fr}.top span{display:none}}</style></head><body><header class="top"><strong>SQL · HOTEL</strong><span>19 exercícios SELECT</span><a href="#ex1">Começar</a></header><section class="hero"><div class="eyebrow">CASO PRÁTICO</div><div class="author">Autor: Pedro Ramos</div><h1>Exercícios SELECT<br>Hotel</h1><p>Pratique filtros, junções, agregações, subconsultas e quantificação universal usando uma base de dados de hotéis, quartos, clientes e reservas.</p><a class="download" href="estruturabdhotel.sql" download>Descarregar estrutura</a><a class="download" href="dadosbdhotel.sql" download>Descarregar dados</a><a class="download" href="Exercicios_SELECT_Hotel_slides.pptx" download>Descarregar slides sem respostas</a></section><section class="overview"><div class="schema"><h2>Base de dados utilizada</h2><div class="tables"><div class="table">Hotel</div><div class="table">Quarto</div><div class="table">Cliente</div><div class="table">Reserva</div><div class="table">Reserva_Quartos</div><div class="table">Factura</div><div class="table">Individual</div><div class="table">Organizacao</div></div><p class="legend">Em cada exercício, o resultado esperado está visível. Clique em <strong>Ver resposta SQL</strong> para comparar o seu comando com uma solução revista.</p></div></section><main><article class="exercise" id="ex1"><div class="n">01</div><div class="body"><h2>Listar o nome de todos os clientes por ordem alfabética decrescente.</h2><h3>Resultado esperado</h3><pre class="result">nome_cliente
+<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Exercícios SELECT · Hotel · Pedro Ramos</title><meta name="description" content="Exercícios SELECT sobre uma base de dados de hotéis, com resultados esperados e soluções SQL."><style>:root{--navy:#102a43;--teal:#087f8c;--cyan:#45bcc4;--gold:#f2b134;--paper:#f4f7f8;--white:#fff;--ink:#17212b;--muted:#5f6f7d;--line:#d5e0e5;--green:#13795b;--rose:#fff0e7}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.58 system-ui,-apple-system,"Segoe UI",sans-serif}.top{position:sticky;top:0;z-index:4;background:rgba(16,42,67,.97);color:white;padding:14px max(22px,calc((100vw - 1120px)/2));display:flex;justify-content:space-between;align-items:center}.top a{color:#d9eef1;text-decoration:none;font-weight:800}.hero{background:var(--navy);color:white;padding:65px max(24px,calc((100vw - 1120px)/2)) 70px}.eyebrow{color:var(--cyan);font-weight:900;letter-spacing:.15em;font-size:13px}.author{color:#c6d8e2;font-weight:700;margin:8px 0 16px}.hero h1{font-size:clamp(48px,7vw,82px);line-height:1;margin:0 0 20px}.hero p{max-width:780px;font-size:21px;color:#d6e4eb}.download{display:inline-block;margin:14px 9px 0 0;padding:12px 17px;border:1px solid #77cad0;border-radius:8px;color:white;text-decoration:none;font-weight:900}.overview{max-width:1120px;margin:34px auto;padding:0 24px}.schema{background:white;border:1px solid var(--line);border-top:7px solid var(--teal);border-radius:16px;padding:26px}.schema h2{color:var(--navy);margin-top:0}.erd{width:100%;height:auto;background:#f8fbfc;border:1px solid var(--line);border-radius:12px}.entity rect{fill:white;stroke:#b9cbd3;stroke-width:2}.entity text{font:17px ui-monospace,SFMono-Regular,Consolas,monospace;fill:#17212b}.entity .title{font:bold 21px system-ui;fill:#102a43}.links path{fill:none;stroke:#087f8c;stroke-width:4}.legend{color:var(--muted)}main{max-width:1120px;margin:auto;padding:20px 24px 90px}.exercise{display:grid;grid-template-columns:75px 1fr;gap:20px;background:white;border:1px solid var(--line);border-radius:15px;padding:26px;margin:24px 0}.n{font-size:28px;font-weight:950;color:var(--teal)}h2{margin:0 0 20px;color:var(--navy);font-size:27px;line-height:1.25}h3{font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}pre{white-space:pre-wrap;overflow:auto;font:15px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;border-radius:10px;padding:18px}.result{background:#edf6f5;border-left:5px solid var(--green)}.solution{display:none;margin-top:14px}.solution.open{display:block}.answer-block{background:#0d2235;color:#eef8fa;margin:10px 0 22px}.solution h3{color:var(--teal);font-size:16px}.show{border:0;background:var(--navy);color:white;padding:11px 16px;border-radius:7px;font-weight:850;cursor:pointer}.note{background:var(--rose);border-left:5px solid var(--gold);padding:13px 16px;border-radius:5px}.footer{background:var(--navy);color:#d6e4eb;padding:35px;text-align:center}@media(max-width:760px){.exercise{grid-template-columns:1fr}.top span{display:none}.schema{padding:12px}.entity text{font-size:15px}}</style></head><body><header class="top"><strong>SQL · HOTEL</strong><span>19 exercícios SELECT</span><a href="#ex1">Começar</a></header><section class="hero"><div class="eyebrow">CASO PRÁTICO</div><div class="author">Autor: Pedro Ramos</div><h1>Exercícios SELECT<br>Hotel</h1><p>Pratique filtros, junções, agregações, subconsultas e quantificação universal usando uma base de dados de hotéis, quartos, clientes e reservas.</p><a class="download" href="estruturabdhotel.sql" download>Descarregar estrutura</a><a class="download" href="dadosbdhotel.sql" download>Descarregar dados</a><a class="download" href="Exercicios_SELECT_Hotel_slides.pptx" download>Descarregar slides sem respostas</a></section><section class="overview"><div class="schema"><h2>Diagrama relacional da base de dados</h2><svg class="erd" viewBox="0 0 1160 760" role="img" aria-label="Diagrama relacional da base de dados Hotel"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#087f8c"/></marker></defs><g class="links" marker-end="url(#arrow)"><path d="M300 125 H430"/><path d="M690 165 H805"/><path d="M690 250 H805"/><path d="M930 320 V390"/><path d="M930 590 V650 H690"/><path d="M805 465 H690"/><path d="M1040 465 H1110 V690 H690"/></g><g class="entity"><g transform="translate(60 55)"><rect width="240" height="140"/><text class="title" x="18" y="28">Hotel</text><text x="18" y="58">PK Sigla_Hotel</text><text x="18" y="84">Designacao</text></g><g transform="translate(430 55)"><rect width="260" height="210"/><text class="title" x="18" y="28">Quarto</text><text x="18" y="58">PK, FK Sigla_Hotel</text><text x="18" y="84">PK Numero_Quarto</text><text x="18" y="110">Numero_Camas</text><text x="18" y="136">Preco</text></g><g transform="translate(805 55)"><rect width="300" height="265"/><text class="title" x="18" y="28">Reserva_Quartos</text><text x="18" y="58">PK, FK Sigla_Hotel</text><text x="18" y="84">PK, FK Numero_Quarto</text><text x="18" y="110">PK, FK Numero_Reserva</text><text x="18" y="136">Cama_Extra</text><text x="18" y="162">Numero_Pessoas</text></g><g transform="translate(805 390)"><rect width="300" height="200"/><text class="title" x="18" y="28">Reserva</text><text x="18" y="58">PK Numero_Reserva</text><text x="18" y="84">FK Numero_Cliente</text><text x="18" y="110">Dia_Entrada</text><text x="18" y="136">Dia_Saida</text></g><g transform="translate(430 365)"><rect width="260" height="200"/><text class="title" x="18" y="28">Cliente</text><text x="18" y="58">PK Numero_Cliente</text><text x="18" y="84">Nome_Cliente</text></g><g transform="translate(60 315)"><rect width="240" height="145"/><text class="title" x="18" y="28">Individual</text><text x="18" y="58">PK, FK Numero_Cliente</text><text x="18" y="84">BI</text></g><g transform="translate(60 535)"><rect width="300" height="175"/><text class="title" x="18" y="28">Organizacao</text><text x="18" y="58">PK, FK Numero_Cliente</text><text x="18" y="84">Ramo_Actividade</text><text x="18" y="110">Nome_Contacto</text></g><g transform="translate(430 620)"><rect width="260" height="125"/><text class="title" x="18" y="28">Factura</text><text x="18" y="58">PK Numero_Factura</text><text x="18" y="84">FK Numero_Reserva</text></g></g></svg><p class="legend"><strong>As setas representam as chaves estrangeiras.</strong> Em cada exercício, o resultado esperado está visível. As resoluções exigem a senha indicada pelo docente.</p></div></section><main><article class="exercise" id="ex1"><div class="n">01</div><div class="body"><h2>Listar o nome de todos os clientes por ordem alfabética decrescente.</h2><h3>Resultado esperado</h3><pre class="result">nome_cliente
 TAP
 Sofia
 Pedro
@@ -11,9 +11,7 @@ Continente
 Carlos
 CE
 Antonio
-Ana</pre><button class="show" data-target="s1">Ver resposta SQL</button><pre class="solution" id="s1">SELECT nome_cliente
-FROM cliente
-ORDER BY nome_cliente DESC;</pre></div></article>
+Ana</pre><button class="show" data-target="s1">Ver resoluções</button><div class="solution" id="s1"></div></div></article>
 <article class="exercise" id="ex2"><div class="n">02</div><div class="body"><h2>Listar o número dos quartos do hotel cuja sigla é RM.</h2><h3>Resultado esperado</h3><pre class="result">numero_quarto
 1
 2
@@ -24,18 +22,11 @@ ORDER BY nome_cliente DESC;</pre></div></article>
 7
 8
 9
-10</pre><button class="show" data-target="s2">Ver resposta SQL</button><pre class="solution" id="s2">SELECT numero_quarto
-FROM quarto
-WHERE sigla_hotel = 'RM'
-ORDER BY numero_quarto;</pre></div></article>
+10</pre><button class="show" data-target="s2">Ver resoluções</button><div class="solution" id="s2"></div></div></article>
 <article class="exercise" id="ex3"><div class="n">03</div><div class="body"><h2>Quantos hotéis existem na base de dados?</h2><h3>Resultado esperado</h3><pre class="result">total_hoteis
-7</pre><button class="show" data-target="s3">Ver resposta SQL</button><pre class="solution" id="s3">SELECT COUNT(*) AS total_hoteis
-FROM hotel;</pre></div></article>
+7</pre><button class="show" data-target="s3">Ver resoluções</button><div class="solution" id="s3"></div></div></article>
 <article class="exercise" id="ex4"><div class="n">04</div><div class="body"><h2>Quantos quartos tem o hotel Majestic (MJ) e quantas camas têm, usando apenas um comando?</h2><h3>Resultado esperado</h3><pre class="result">total_quartos | total_camas
-4              | 10</pre><button class="show" data-target="s4">Ver resposta SQL</button><pre class="solution" id="s4">SELECT COUNT(*) AS total_quartos,
-       SUM(numero_camas) AS total_camas
-FROM quarto
-WHERE sigla_hotel = 'MJ';</pre></div></article>
+4              | 10</pre><button class="show" data-target="s4">Ver resoluções</button><div class="solution" id="s4"></div></div></article>
 <article class="exercise" id="ex5"><div class="n">05</div><div class="body"><h2>Listar o nome de todos os clientes individuais.</h2><h3>Resultado esperado</h3><pre class="result">nome
 Ana
 Pedro
@@ -43,40 +34,20 @@ Luis
 Carlos
 Sofia
 Luisa
-Antonio</pre><button class="show" data-target="s5">Ver resposta SQL</button><pre class="solution" id="s5">SELECT c.nome_cliente AS nome
-FROM cliente AS c
-JOIN individual AS i ON i.numero_cliente = c.numero_cliente
-ORDER BY c.numero_cliente;</pre></div></article>
+Antonio</pre><button class="show" data-target="s5">Ver resoluções</button><div class="solution" id="s5"></div></div></article>
 <article class="exercise" id="ex6"><div class="n">06</div><div class="body"><h2>Listar o nome das organizações que trabalham no ramo Alimentar.</h2><h3>Resultado esperado</h3><pre class="result">nome
-Continente</pre><button class="show" data-target="s6">Ver resposta SQL</button><pre class="solution" id="s6">SELECT c.nome_cliente AS nome
-FROM cliente AS c
-JOIN organizacao AS o ON o.numero_cliente = c.numero_cliente
-WHERE o.ramo_actividade = 'Alimentar';</pre></div></article>
+Continente</pre><button class="show" data-target="s6">Ver resoluções</button><div class="solution" id="s6"></div></div></article>
 <article class="exercise" id="ex7"><div class="n">07</div><div class="body"><h2>Quais são os clientes individuais que não têm BI?</h2><h3>Resultado esperado</h3><pre class="result">nome_cliente
 Luisa
-Antonio</pre><button class="show" data-target="s7">Ver resposta SQL</button><pre class="solution" id="s7">SELECT c.nome_cliente
-FROM cliente AS c
-JOIN individual AS i ON i.numero_cliente = c.numero_cliente
-WHERE i.bi IS NULL
-ORDER BY c.numero_cliente;</pre></div></article>
+Antonio</pre><button class="show" data-target="s7">Ver resoluções</button><div class="solution" id="s7"></div></div></article>
 <article class="exercise" id="ex8"><div class="n">08</div><div class="body"><h2>Quais são os hotéis com reservas em que pelo menos um quarto está afeto a mais de duas pessoas?</h2><h3>Resultado esperado</h3><pre class="result">designacao
 Lisboa
-Roma</pre><button class="show" data-target="s8">Ver resposta SQL</button><pre class="solution" id="s8">SELECT DISTINCT h.designacao
-FROM hotel AS h
-JOIN reserva_quartos AS rq ON rq.sigla_hotel = h.sigla_hotel
-WHERE rq.numero_pessoas &gt; 2
-ORDER BY h.designacao;</pre></div></article>
+Roma</pre><button class="show" data-target="s8">Ver resoluções</button><div class="solution" id="s8"></div></div></article>
 <article class="exercise" id="ex9"><div class="n">09</div><div class="body"><h2>Quais são os hotéis com reservas que se sobrepõem a agosto ou setembro de 2012? Basta existir pelo menos um dia da reserva nesse intervalo.</h2><h3>Resultado esperado</h3><pre class="result">designacao
 Lisboa
 Majestic
 Mundial
-Roma</pre><p class="note"><strong>Verificação:</strong> A condição de sobreposição pode ser escrita de forma mais curta e geral: entrada antes do fim do intervalo e saída no início ou depois.</p><button class="show" data-target="s9">Ver resposta SQL</button><pre class="solution" id="s9">SELECT DISTINCT h.designacao
-FROM hotel AS h
-JOIN reserva_quartos AS rq ON rq.sigla_hotel = h.sigla_hotel
-JOIN reserva AS r ON r.numero_reserva = rq.numero_reserva
-WHERE r.dia_entrada &lt; '2012-10-01'
-  AND r.dia_saida &gt;= '2012-08-01'
-ORDER BY h.designacao;</pre></div></article>
+Roma</pre><p class="note"><strong>Verificação:</strong> A condição de sobreposição pode ser escrita de forma mais curta e geral: entrada antes do fim do intervalo e saída no início ou depois.</p><button class="show" data-target="s9">Ver resoluções</button><div class="solution" id="s9"></div></div></article>
 <article class="exercise" id="ex10"><div class="n">10</div><div class="body"><h2>Quais são os números das reservas efetuadas pela ONU e pela Ana?</h2><h3>Resultado esperado</h3><pre class="result">numero_reserva
 1
 2
@@ -86,20 +57,10 @@ ORDER BY h.designacao;</pre></div></article>
 11
 12
 13
-14</pre><button class="show" data-target="s10">Ver resposta SQL</button><pre class="solution" id="s10">SELECT r.numero_reserva
-FROM reserva AS r
-JOIN cliente AS c ON c.numero_cliente = r.numero_cliente
-WHERE c.nome_cliente IN ('ONU', 'Ana')
-ORDER BY r.numero_reserva;</pre></div></article>
+14</pre><button class="show" data-target="s10">Ver resoluções</button><div class="solution" id="s10"></div></div></article>
 <article class="exercise" id="ex11"><div class="n">11</div><div class="body"><h2>Liste os hotéis onde o cliente ISCTE já efetuou reservas.</h2><h3>Resultado esperado</h3><pre class="result">designacao
 Alfa
-Mundial</pre><button class="show" data-target="s11">Ver resposta SQL</button><pre class="solution" id="s11">SELECT DISTINCT h.designacao
-FROM cliente AS c
-JOIN reserva AS r ON r.numero_cliente = c.numero_cliente
-JOIN reserva_quartos AS rq ON rq.numero_reserva = r.numero_reserva
-JOIN hotel AS h ON h.sigla_hotel = rq.sigla_hotel
-WHERE c.nome_cliente = 'ISCTE'
-ORDER BY h.designacao;</pre></div></article>
+Mundial</pre><button class="show" data-target="s11">Ver resoluções</button><div class="solution" id="s11"></div></div></article>
 <article class="exercise" id="ex12"><div class="n">12</div><div class="body"><h2>Para cada hotel, indicar a quantidade de faturas, incluindo hotéis sem faturas.</h2><h3>Resultado esperado</h3><pre class="result">designacao | total_facturas
 Alfa       | 3
 Baia       | 0
@@ -107,13 +68,7 @@ Lisboa     | 4
 Majestic   | 2
 Mundial    | 1
 Roma       | 5
-Sheraton   | 1</pre><p class="note"><strong>Verificação:</strong> COUNT(DISTINCT ...) é necessário porque uma reserva pode conter mais do que um quarto.</p><button class="show" data-target="s12">Ver resposta SQL</button><pre class="solution" id="s12">SELECT h.designacao,
-       COUNT(DISTINCT f.numero_factura) AS total_facturas
-FROM hotel AS h
-LEFT JOIN reserva_quartos AS rq ON rq.sigla_hotel = h.sigla_hotel
-LEFT JOIN factura AS f ON f.numero_reserva = rq.numero_reserva
-GROUP BY h.sigla_hotel, h.designacao
-ORDER BY h.designacao;</pre></div></article>
+Sheraton   | 1</pre><p class="note"><strong>Verificação:</strong> COUNT(DISTINCT ...) é necessário porque uma reserva pode conter mais do que um quarto.</p><button class="show" data-target="s12">Ver resoluções</button><div class="solution" id="s12"></div></div></article>
 <article class="exercise" id="ex13"><div class="n">13</div><div class="body"><h2>Para cada hotel, indicar o total de quartos, incluindo hotéis sem quartos.</h2><h3>Resultado esperado</h3><pre class="result">designacao | total_quartos
 Alfa       | 8
 Baia       | 0
@@ -121,99 +76,27 @@ Lisboa     | 6
 Majestic   | 4
 Mundial    | 12
 Roma       | 10
-Sheraton   | 10</pre><p class="note"><strong>Verificação:</strong> COUNT(*) daria 1 para o hotel Baia. Deve contar-se uma coluna da tabela quarto.</p><button class="show" data-target="s13">Ver resposta SQL</button><pre class="solution" id="s13">SELECT h.designacao,
-       COUNT(q.numero_quarto) AS total_quartos
-FROM hotel AS h
-LEFT JOIN quarto AS q ON q.sigla_hotel = h.sigla_hotel
-GROUP BY h.sigla_hotel, h.designacao
-ORDER BY h.designacao;</pre></div></article>
+Sheraton   | 10</pre><p class="note"><strong>Verificação:</strong> COUNT(*) daria 1 para o hotel Baia. Deve contar-se uma coluna da tabela quarto.</p><button class="show" data-target="s13">Ver resoluções</button><div class="solution" id="s13"></div></div></article>
 <article class="exercise" id="ex14"><div class="n">14</div><div class="body"><h2>Listar os hotéis com o maior número de quartos.</h2><h3>Resultado esperado</h3><pre class="result">designacao | total_quartos
-Mundial    | 12</pre><button class="show" data-target="s14">Ver resposta SQL</button><pre class="solution" id="s14">WITH numero_quartos AS (
-  SELECT h.sigla_hotel, h.designacao,
-         COUNT(q.numero_quarto) AS total_quartos
-  FROM hotel AS h
-  LEFT JOIN quarto AS q ON q.sigla_hotel = h.sigla_hotel
-  GROUP BY h.sigla_hotel, h.designacao
-)
-SELECT designacao, total_quartos
-FROM numero_quartos
-WHERE total_quartos = (SELECT MAX(total_quartos) FROM numero_quartos);</pre></div></article>
+Mundial    | 12</pre><button class="show" data-target="s14">Ver resoluções</button><div class="solution" id="s14"></div></div></article>
 <article class="exercise" id="ex15"><div class="n">15</div><div class="body"><h2>Para cada organização, indicar o total de reservas, incluindo organizações sem reservas.</h2><h3>Resultado esperado</h3><pre class="result">nome_cliente | total_reservas
 ISCTE        | 3
 ONU          | 8
 NASA         | 0
 CE           | 2
 TAP          | 2
-Continente   | 0</pre><button class="show" data-target="s15">Ver resposta SQL</button><pre class="solution" id="s15">SELECT c.nome_cliente,
-       COUNT(r.numero_reserva) AS total_reservas
-FROM cliente AS c
-JOIN organizacao AS o ON o.numero_cliente = c.numero_cliente
-LEFT JOIN reserva AS r ON r.numero_cliente = c.numero_cliente
-GROUP BY c.numero_cliente, c.nome_cliente
-ORDER BY c.numero_cliente;</pre></div></article>
+Continente   | 0</pre><button class="show" data-target="s15">Ver resoluções</button><div class="solution" id="s15"></div></div></article>
 <article class="exercise" id="ex16"><div class="n">16</div><div class="body"><h2>Para cada organização e cada hotel, indicar o total de reservas, incluindo combinações sem reservas.</h2><h3>Resultado esperado</h3><pre class="result">organização | AL BH LS MJ MN RM SH
 ISCTE       | 2  0  0  0  1  0  0
 ONU         | 2  0  1  1  1  2  1
 NASA        | 0  0  0  0  0  0  0
 CE          | 0  0  0  0  0  2  0
 TAP         | 0  0  0  2  0  0  0
-Continente  | 0  0  0  0  0  0  0</pre><p class="note"><strong>Verificação:</strong> O resultado contém 42 linhas. A matriz apresenta as mesmas linhas de forma compacta. A contagem usa DISTINCT porque uma reserva pode ocupar vários quartos.</p><button class="show" data-target="s16">Ver resposta SQL</button><pre class="solution" id="s16">SELECT c.nome_cliente, h.sigla_hotel,
-       (SELECT COUNT(DISTINCT r.numero_reserva)
-        FROM reserva AS r
-        JOIN reserva_quartos AS rq ON rq.numero_reserva = r.numero_reserva
-        WHERE r.numero_cliente = c.numero_cliente
-          AND rq.sigla_hotel = h.sigla_hotel) AS total
-FROM cliente AS c
-JOIN organizacao AS o ON o.numero_cliente = c.numero_cliente
-CROSS JOIN hotel AS h
-ORDER BY c.numero_cliente, h.sigla_hotel;</pre></div></article>
+Continente  | 0  0  0  0  0  0  0</pre><p class="note"><strong>Verificação:</strong> O resultado contém 42 linhas. A matriz apresenta as mesmas linhas de forma compacta. A contagem usa DISTINCT porque uma reserva pode ocupar vários quartos.</p><button class="show" data-target="s16">Ver resoluções</button><div class="solution" id="s16"></div></div></article>
 <article class="exercise" id="ex17"><div class="n">17</div><div class="body"><h2>Listar os hotéis com o maior número de quartos livres, considerando livre um quarto que nunca aparece em Reserva_Quartos.</h2><h3>Resultado esperado</h3><pre class="result">designacao | total_livres
 Mundial    | 8
-Sheraton   | 8</pre><p class="note"><strong>Verificação:</strong> Com os dados fornecidos, “livre” significa nunca reservado, não livre numa data concreta.</p><button class="show" data-target="s17">Ver resposta SQL</button><pre class="solution" id="s17">WITH quartos_livres AS (
-  SELECT h.sigla_hotel, h.designacao,
-         COUNT(q.numero_quarto) AS total_livres
-  FROM hotel AS h
-  LEFT JOIN quarto AS q
-    ON q.sigla_hotel = h.sigla_hotel
-   AND NOT EXISTS (
-     SELECT 1 FROM reserva_quartos AS rq
-     WHERE rq.sigla_hotel = q.sigla_hotel
-       AND rq.numero_quarto = q.numero_quarto
-   )
-  GROUP BY h.sigla_hotel, h.designacao
-)
-SELECT designacao, total_livres
-FROM quartos_livres
-WHERE total_livres = (SELECT MAX(total_livres) FROM quartos_livres);</pre></div></article>
+Sheraton   | 8</pre><p class="note"><strong>Verificação:</strong> Com os dados fornecidos, “livre” significa nunca reservado, não livre numa data concreta.</p><button class="show" data-target="s17">Ver resoluções</button><div class="solution" id="s17"></div></div></article>
 <article class="exercise" id="ex18"><div class="n">18</div><div class="body"><h2>Listar as organizações que têm reservas em todos os hotéis com quartos. O hotel Baia fica excluído porque não tem quartos.</h2><h3>Resultado esperado</h3><pre class="result">nome_cliente
-ONU</pre><p class="note"><strong>Verificação:</strong> A dupla negação traduz “não existe um hotel com quartos no qual a organização não tenha reservado”.</p><button class="show" data-target="s18">Ver resposta SQL</button><pre class="solution" id="s18">SELECT c.nome_cliente
-FROM cliente AS c
-JOIN organizacao AS o ON o.numero_cliente = c.numero_cliente
-WHERE NOT EXISTS (
-  SELECT 1
-  FROM hotel AS h
-  WHERE EXISTS (SELECT 1 FROM quarto AS q WHERE q.sigla_hotel = h.sigla_hotel)
-    AND NOT EXISTS (
-      SELECT 1
-      FROM reserva AS r
-      JOIN reserva_quartos AS rq ON rq.numero_reserva = r.numero_reserva
-      WHERE r.numero_cliente = c.numero_cliente
-        AND rq.sigla_hotel = h.sigla_hotel
-    )
-)
-ORDER BY c.nome_cliente;</pre></div></article>
+ONU</pre><p class="note"><strong>Verificação:</strong> A dupla negação traduz “não existe um hotel com quartos no qual a organização não tenha reservado”.</p><button class="show" data-target="s18">Ver resoluções</button><div class="solution" id="s18"></div></div></article>
 <article class="exercise" id="ex19"><div class="n">19</div><div class="body"><h2>Listar o hotel com maior volume de faturação e indicar o respetivo valor.</h2><h3>Resultado esperado</h3><pre class="result">designacao | total
-Roma       | 2000.00</pre><p class="note"><strong>Verificação:</strong> A fatura tem de ser deduplicada dentro de cada hotel antes do SUM; uma reserva com dois quartos não pode duplicar o valor.</p><button class="show" data-target="s19">Ver resposta SQL</button><pre class="solution" id="s19">WITH facturas_hotel AS (
-  SELECT DISTINCT h.sigla_hotel, h.designacao,
-                  f.numero_factura, f.valor_factura
-  FROM hotel AS h
-  JOIN reserva_quartos AS rq ON rq.sigla_hotel = h.sigla_hotel
-  JOIN factura AS f ON f.numero_reserva = rq.numero_reserva
-), totais AS (
-  SELECT sigla_hotel, designacao, SUM(valor_factura) AS total
-  FROM facturas_hotel
-  GROUP BY sigla_hotel, designacao
-)
-SELECT designacao, total
-FROM totais
-WHERE total = (SELECT MAX(total) FROM totais);</pre></div></article></main><footer class="footer">Exercícios SELECT · Hotel · Autor: Pedro Ramos</footer><script>document.querySelectorAll('.show').forEach(b=>b.addEventListener('click',()=>{const s=document.getElementById(b.dataset.target);s.classList.toggle('open');b.textContent=s.classList.contains('open')?'Ocultar resposta SQL':'Ver resposta SQL'}));</script></body></html>
+Roma       | 2000.00</pre><p class="note"><strong>Verificação:</strong> A fatura tem de ser deduplicada dentro de cada hotel antes do SUM; uma reserva com dois quartos não pode duplicar o valor.</p><button class="show" data-target="s19">Ver resoluções</button><div class="solution" id="s19"></div></div></article></main><footer class="footer">Exercícios SELECT · Hotel · Autor: Pedro Ramos</footer><script src="solutions.js"></script></body></html>
