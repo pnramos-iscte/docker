@@ -18,6 +18,7 @@
     <h1>NoSQL e<br>MongoDB</h1>
     <span>Da flexibilidade dos documentos às primeiras consultas</span>
     <b>Autor: Pedro Ramos</b>
+    <a class="download" href="NoSQL_e_MongoDB_slides_v2.pptx" download>Descarregar slides</a>
   </section>
 
   <main>
@@ -90,7 +91,7 @@
         <p><code>docker compose exec</code> manda executar um comando num serviço que já está a correr. O primeiro <code>mongo</code> <b>não é uma palavra reservada</b>: é o nome atribuído ao serviço ou contentor no ficheiro Compose. <code>bash</code> abre uma linha de comandos dentro desse contentor.</p>
         <h3>Entrar na consola do MongoDB</h3>
         <pre><code>mongosh</code></pre>
-        <p><code>mongosh</code> é a consola onde escrevemos os comandos do MongoDB. A indicação apresentada à esquerda passa normalmente a mostrar a base de dados atual.</p>
+        <p><code>mongosh</code> é o <b>cliente</b>: a aplicação através da qual escrevemos comandos e recebemos resultados. O <b>servidor</b> é o processo <code>mongod</code>, que o Docker Compose já iniciou dentro do contentor quando executámos <code>docker compose up -d</code>. Ao escrevermos <code>mongosh</code>, abrimos o cliente e este liga-se ao servidor que já estava à espera de ligações.</p>
         <div class="terminal"><span>$ docker compose exec mongo bash</span><span>root@contentor:/# mongosh</span><span>test&gt;</span></div>
       </div>
     </section>
@@ -176,6 +177,25 @@ WHERE curso = 'LEI';</code></pre></div><div><small>MongoDB</small><pre><code>db.
     { curso: "LIGE" }
   ]
 })</code></pre>
+        <h3>AND e OR na mesma consulta</h3>
+        <p>Procurar alunos de LIGE ou alunos de LEI com número superior a 110000:</p>
+        <pre><code>db.aluno.find({
+  $or: [
+    { curso: "LIGE" },
+    {
+      $and: [
+        { curso: "LEI" },
+        { numero: { $gt: 110000 } }
+      ]
+    }
+  ]
+})</code></pre>
+        <h3>NOT</h3>
+        <p>Excluir os documentos cujo curso é LIGE:</p>
+        <pre><code>db.aluno.find({
+  curso: { $not: { $eq: "LIGE" } }
+})</code></pre>
+        <p>Numa desigualdade simples também podemos escrever <code>{ curso: { $ne: "LIGE" } }</code>.</p>
         <h3>Mostrar apenas alguns campos</h3>
         <pre><code>db.aluno.find(
   { curso: "LEI" },
@@ -189,6 +209,9 @@ WHERE curso = 'LEI';</code></pre></div><div><small>MongoDB</small><pre><code>db.
   { email: 0, interesses: 0 }
 )</code></pre>
         <p>Na projeção usamos normalmente inclusões (<code>1</code>) ou exclusões (<code>0</code>), mas não misturamos as duas. <code>_id</code> é a exceção e pode ser escondido numa projeção de inclusão.</p>
+        <h3>Ordenar os resultados</h3>
+        <pre><code>db.aluno.find({}).sort({ curso: 1, nome: 1 })</code></pre>
+        <p>O resultado é ordenado primeiro por <code>curso</code> e, dentro de cada curso, por <code>nome</code>. O valor <code>1</code> significa ordem crescente; <code>-1</code> significa ordem decrescente.</p>
       </div>
     </section>
 
