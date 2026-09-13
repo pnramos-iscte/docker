@@ -22,7 +22,7 @@ const exercises=[
 ];
 const openAnswers={
  s1:`<h4>Resolução MongoDB</h4><pre><code>db.hotel.find(\n  { tipo: "cliente" },\n  { _id: 0, nome: 1 }\n).sort({ nome: -1 })</code></pre><p class="solution-note">O valor <code>-1</code> ordena o nome por ordem decrescente.</p>`,
- s2:`<h4>Resolução MongoDB</h4><pre><code>db.hotel.aggregate([\n  { $match: { tipo: "hotel", sigla: "RM" } },\n  { $unwind: "$quartos" },\n  { $project: { _id: 0, numeroQuarto: "$quartos.numero" } },\n  { $sort: { numeroQuarto: 1 } }\n])</code></pre><p class="solution-note"><code>$unwind</code> transforma cada elemento do array <code>quartos</code> num documento da pipeline.</p>`
+ s2:`<h4>Resolução MongoDB</h4><pre><code>db.hotel.aggregate([\n  { $match: { tipo: "hotel", sigla: "RM" } },\n  { $unwind: "$quartos" },\n  { $project: { _id: 0, numeroQuarto: "$quartos.numero" } },\n  { $sort: { numeroQuarto: 1 } }\n])</code></pre><p class="solution-note"><code>$match</code> começa por selecionar um único documento: o hotel Roma. Nesse documento, <code>quartos</code> é um array.</p><div class="transform-example"><div><b>Antes de $unwind</b><pre><code>{ sigla: "RM", quartos: [\n  { numero: 1, camas: 2 },\n  { numero: 2, camas: 3 },\n  ...\n] }</code></pre></div><div><b>Depois de $unwind</b><pre><code>{ sigla: "RM", quartos: { numero: 1, camas: 2 } }\n{ sigla: "RM", quartos: { numero: 2, camas: 3 } }\n...</code></pre></div></div><p class="solution-note"><code>$unwind</code> produz um documento da pipeline por cada elemento do array. Assim, <code>$project</code> consegue devolver uma linha por quarto.</p>`
 };
 const list=document.getElementById("exercise-list");
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
