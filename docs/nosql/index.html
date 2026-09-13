@@ -18,7 +18,7 @@
     <h1>NoSQL e<br>MongoDB</h1>
     <span>Da flexibilidade dos documentos às primeiras consultas</span>
     <b>Autor: Pedro Ramos</b>
-    <a class="download" href="NoSQL_e_MongoDB_slides_v2.pptx" download>Descarregar slides</a>
+    <a class="download" href="NoSQL_e_MongoDB_slides_v3.pptx" download>Descarregar slides</a>
   </section>
 
   <main>
@@ -254,6 +254,40 @@ WHERE curso = 'LEI';</code></pre></div><div><small>MongoDB</small><pre><code>db.
         <pre><code>db.resumo_cursos.find()</code></pre>
         <div class="result"><b>Resultado</b><pre><code>{ _id: "LEI",  total: 2 }
 { _id: "LIGE", total: 1 }</code></pre></div>
+        <h3>O equivalente a WHERE e HAVING</h3>
+        <p>Queremos guardar os países que têm mais de 100 filmes com uma duração mínima de 90 minutos. Neste exemplo, <code>$match</code> aparece duas vezes porque está a filtrar resultados diferentes em momentos diferentes da pipeline.</p>
+        <pre><code>db.movies.aggregate([
+  { $match: { duration: { $gte: 90 } } },
+  {
+    $group: {
+      _id: "$country",
+      TotalMovies: { $sum: 1 }
+    }
+  },
+  { $match: { TotalMovies: { $gt: 100 } } },
+  {
+    $project: {
+      _id: 0,
+      Country: "$_id",
+      TotalMovies: 1
+    }
+  },
+  { $merge: "countries_100longmovies" }
+])</code></pre>
+        <div class="pipeline-map">
+          <div><code>1.º $match</code><b>WHERE</b><span>Filtra documentos de <code>movies</code> antes do agrupamento: apenas filmes com pelo menos 90 minutos.</span></div>
+          <div><code>$group</code><b>GROUP BY</b><span>Cria um grupo por país e calcula <code>TotalMovies</code>.</span></div>
+          <div><code>2.º $match</code><b>HAVING</b><span>Filtra os grupos já calculados: apenas países com mais de 100 filmes.</span></div>
+          <div><code>$project</code><b>SELECT</b><span>Escolhe os campos apresentados e muda <code>_id</code> para <code>Country</code>.</span></div>
+          <div><code>$merge</code><b>Guardar</b><span>Grava o resultado na coleção <code>countries_100longmovies</code>.</span></div>
+        </div>
+        <p>A segunda utilização de <code>$match</code> já não vê os filmes originais. Recebe apenas os documentos produzidos por <code>$group</code>, que têm campos como <code>_id</code> e <code>TotalMovies</code>.</p>
+        <h4>Consulta SQL equivalente</h4>
+        <pre><code>SELECT country, COUNT(*) AS TotalMovies
+FROM movies
+WHERE duration &gt;= 90
+GROUP BY country
+HAVING COUNT(*) &gt; 100;</code></pre>
       </div>
     </section>
 
