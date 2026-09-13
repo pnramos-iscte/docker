@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NoSQL e MongoDB · Tutorial</title>
+  <meta name="description" content="Introdução às bases de dados NoSQL e primeiros passos com MongoDB.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <strong>BASES DE DADOS</strong>
+    <nav><a href="#nosql">NoSQL</a><a href="#mongodb">MongoDB</a><a href="#consultar">Find</a><a href="#agregar">Agregação</a></nav>
+  </header>
+
+  <section class="hero">
+    <p>BASES DE DADOS · TUTORIAL</p>
+    <h1>NoSQL e<br>MongoDB</h1>
+    <span>Da flexibilidade dos documentos às primeiras consultas</span>
+    <b>Autor: Pedro Ramos</b>
+  </section>
+
+  <main>
+    <section id="nosql" class="chapter">
+      <div class="chapter-number">PARTE 1</div>
+      <div>
+        <p class="eyebrow">Uma visão geral</p>
+        <h2>O que são bases de dados NoSQL?</h2>
+        <p><b>NoSQL</b> significa habitualmente <i>Not Only SQL</i>. O nome reúne diferentes famílias de bases de dados que não organizam obrigatoriamente toda a informação em tabelas relacionadas nem usam SQL como linguagem principal.</p>
+        <p>Não existe um único “modelo NoSQL”. Há bases documentais, chave-valor, colunares e orientadas a grafos. Nesta aula interessa sobretudo perceber três razões que contribuíram para a sua popularidade: <b>flexibilidade da estrutura</b>, <b>distribuição dos dados</b> e <b>tolerância a falhas</b>.</p>
+        <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-01.png" alt="Introdução às bases de dados NoSQL"></div><figcaption>NoSQL abrange mais do que uma tecnologia e responde a limitações que podem surgir em sistemas relacionais de grande escala.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="chapter">
+      <div class="chapter-number">1.1</div>
+      <div>
+        <p class="eyebrow">Estrutura dos dados</p>
+        <h2>Flexibilidade</h2>
+        <p>Numa tabela relacional definimos antecipadamente colunas, tipos de dados, chaves e restrições. Todos os registos respeitam essa estrutura. Isto favorece a coerência, mas torna mais exigentes algumas alterações ao modelo.</p>
+        <div class="image-sequence">
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-02.png" alt="Tabela relacional com estrutura fixa"></div><figcaption>Uma nova linha encaixa na estrutura já definida.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-03.png" alt="Novos dados que não encaixam nas colunas existentes"></div><figcaption>Uma informação diferente pode não ter uma coluna onde ser guardada.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-04.png" alt="Registos com atributos diferentes"></div><figcaption>Entidades semelhantes podem precisar de atributos distintos.</figcaption></figure>
+        </div>
+        <p>Numa base documental, cada documento pode ter campos diferentes. A aplicação consegue guardar uma nova estrutura sem alterar previamente todas as outras ocorrências.</p>
+        <div class="image-sequence two">
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-05.png" alt="Novos dados da Internet das Coisas"></div><figcaption>Sensores diferentes podem produzir dados com estruturas diferentes.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-06.png" alt="Novos dados de redes sociais"></div><figcaption>O mesmo princípio aplica-se a informação de redes sociais.</figcaption></figure>
+        </div>
+        <p>Essa liberdade tem um custo: a base de dados não garante automaticamente que todos os documentos tenham os campos esperados ou os valores corretos. A aplicação e as regras de validação passam a ter um papel importante.</p>
+        <div class="image-sequence two">
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-07.png" alt="Documento do Prémio Nobel com informação repetida"></div><figcaption>Um documento pode guardar informação relacionada no próprio registo, mesmo que haja repetição.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-08.png" alt="Comparação entre documento e versão relacional"></div><figcaption>O modelo relacional separa entidades; o documento pode agregá-las numa estrutura hierárquica.</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter">
+      <div class="chapter-number">1.2</div>
+      <div>
+        <p class="eyebrow">Dados distribuídos</p>
+        <h2>Tolerância a falhas</h2>
+        <p>Os dados podem ser distribuídos e replicados por vários servidores. Se um servidor falhar, outro pode continuar a responder. A replicação também permite aproximar cópias dos utilizadores e distribuir o trabalho.</p>
+        <div class="image-sequence two">
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-09.png" alt="Dados distribuídos por vários países"></div><figcaption>Cópias dos dados podem existir em localizações diferentes.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-10.png" alt="Propagação de novos dados entre servidores"></div><figcaption>Uma alteração recebida num servidor é propagada às restantes cópias.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-11.png" alt="Leitura feita durante a propagação de dados"></div><figcaption>Durante a propagação, dois servidores podem responder com versões diferentes.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-12.png" alt="Falha de um dos servidores distribuídos"></div><figcaption>Uma réplica indisponível não obriga todo o sistema a parar.</figcaption></figure>
+        </div>
+        <div class="image-sequence two">
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-13.png" alt="Comparação entre consistência e disponibilidade"></div><figcaption>Consistência: todas as leituras veem o mesmo valor. Disponibilidade: o sistema continua a responder.</figcaption></figure>
+          <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-14.png" alt="Escolha entre disponibilidade e consistência perante uma falha de rede"></div><figcaption>Perante uma partição de rede, um sistema distribuído pode ter de privilegiar consistência ou disponibilidade.</figcaption></figure>
+        </div>
+        <figure class="lesson-figure"><div class="slide-crop"><img src="assets/slide-15.png" alt="Síntese das características das bases de dados NoSQL"></div><figcaption>Síntese da primeira parte: documentos flexíveis, disponibilidade e distribuição horizontal.</figcaption></figure>
+        <aside><b>Nesta aula não vamos configurar réplicas.</b> Estas imagens explicam a motivação. A parte prática usa uma única instância de MongoDB.</aside>
+      </div>
+    </section>
+
+    <section id="mongodb" class="chapter dark">
+      <div class="chapter-number">PARTE 2</div>
+      <div>
+        <p class="eyebrow">Primeiros passos</p>
+        <h2>MongoDB numa versão muito leve</h2>
+        <p>O MongoDB guarda <b>documentos</b>, semelhantes a objetos JSON, dentro de <b>coleções</b>. As coleções pertencem a uma <b>base de dados</b>.</p>
+        <div class="hierarchy"><span>base de dados</span><i>contém</i><span>coleções</span><i>contêm</i><span>documentos</span></div>
+        <p>Partimos do princípio de que o MongoDB já está instalado através do guião Docker disponibilizado aos alunos.</p>
+        <h3>Abrir um terminal no contentor</h3>
+        <pre><code>docker compose exec mongo bash</code></pre>
+        <p><code>docker compose exec</code> manda executar um comando num serviço que já está a correr. O primeiro <code>mongo</code> <b>não é uma palavra reservada</b>: é o nome atribuído ao serviço ou contentor no ficheiro Compose. <code>bash</code> abre uma linha de comandos dentro desse contentor.</p>
+        <h3>Entrar na consola do MongoDB</h3>
+        <pre><code>mongosh</code></pre>
+        <p><code>mongosh</code> é a consola onde escrevemos os comandos do MongoDB. A indicação apresentada à esquerda passa normalmente a mostrar a base de dados atual.</p>
+        <div class="terminal"><span>$ docker compose exec mongo bash</span><span>root@contentor:/# mongosh</span><span>test&gt;</span></div>
+      </div>
+    </section>
+
+    <section class="chapter">
+      <div class="chapter-number">2.1</div>
+      <div>
+        <p class="eyebrow">Criar ao inserir</p>
+        <h2>A primeira base, coleção e documento</h2>
+        <p>No modelo relacional começaríamos por criar a base de dados, criar a tabela, escolher as colunas e tipos, definir as chaves e só depois inserir uma linha. Aqui começamos diretamente pelo documento.</p>
+        <pre><code>use faculdade
+
+db.aluno.insertOne({
+  numero: 105514,
+  nome: "Ana Silva",
+  curso: "LEI"
+})</code></pre>
+        <div class="result"><b>Resultado simplificado</b><pre><code>{ acknowledged: true, insertedId: ObjectId("...") }</code></pre></div>
+        <p><code>use faculdade</code> seleciona o nome da base de dados. O MongoDB só a cria efetivamente quando guardamos o primeiro documento. <code>db.aluno.insertOne(...)</code> cria a coleção <code>aluno</code>, se ainda não existir, e insere o documento.</p>
+        <h3>Confirmar o que foi criado</h3>
+        <pre><code>show dbs
+show collections
+db.aluno.find()</code></pre>
+        <div class="result"><b>Resultado</b><pre><code>[{
+  _id: ObjectId("..."),
+  numero: 105514,
+  nome: "Ana Silva",
+  curso: "LEI"
+}]</code></pre></div>
+        <p>O campo <code>_id</code> identifica unicamente o documento. Como não o fornecemos, o MongoDB criou-o automaticamente.</p>
+      </div>
+    </section>
+
+    <section class="chapter">
+      <div class="chapter-number">2.2</div>
+      <div>
+        <p class="eyebrow">Flexibilidade e risco</p>
+        <h2>Um erro pode criar outra coleção</h2>
+        <p>Agora queremos inserir outro aluno, mas escrevemos por engano o nome da coleção no plural:</p>
+        <pre><code>db.alunos.insertOne({
+  numero: 122715,
+  nome: "Bruno Costa",
+  curso: "LIGE"
+})</code></pre>
+        <pre><code>show collections</code></pre>
+        <div class="result"><b>Resultado</b><pre><code>aluno
+alunos</code></pre></div>
+        <p>O MongoDB não sabe que foi um engano. Criou uma nova coleção chamada <code>alunos</code>. A flexibilidade torna algumas tarefas simples, mas também exige atenção aos nomes.</p>
+        <h3>Um novo documento pode ter outros campos</h3>
+        <pre><code>db.aluno.insertOne({
+  numero: 123013,
+  nome: "Carla Rocha",
+  curso: "LEI",
+  email: "carla@example.org",
+  interesses: ["dados", "programação"]
+})</code></pre>
+        <p>O primeiro documento continua sem <code>email</code> e <code>interesses</code>. Não foi necessário alterar previamente a coleção. Esta é uma diferença essencial em relação a uma tabela relacional tradicional.</p>
+        <aside><b>Mais simples não significa sem regras.</b> Em aplicações reais podemos definir validações para impedir nomes errados, campos obrigatórios ou tipos inadequados.</aside>
+      </div>
+    </section>
+
+    <section id="consultar" class="chapter">
+      <div class="chapter-number">2.3</div>
+      <div>
+        <p class="eyebrow">A analogia com SELECT</p>
+        <h2>Consultar documentos com find</h2>
+        <p><code>find</code> desempenha um papel semelhante ao <code>SELECT</code>. O primeiro objeto indica o filtro, como o <code>WHERE</code>. O segundo objeto indica os campos a mostrar ou esconder.</p>
+        <div class="comparison"><div><small>SQL</small><pre><code>SELECT *
+FROM aluno
+WHERE curso = 'LEI';</code></pre></div><div><small>MongoDB</small><pre><code>db.aluno.find({
+  curso: "LEI"
+})</code></pre></div></div>
+        <h3>AND</h3>
+        <p>Campos escritos no mesmo filtro são ligados por <code>AND</code>:</p>
+        <pre><code>db.aluno.find({
+  curso: "LEI",
+  numero: { $gt: 110000 }
+})</code></pre>
+        <h3>OR</h3>
+        <pre><code>db.aluno.find({
+  $or: [
+    { curso: "LEI" },
+    { curso: "LIGE" }
+  ]
+})</code></pre>
+        <h3>Mostrar apenas alguns campos</h3>
+        <pre><code>db.aluno.find(
+  { curso: "LEI" },
+  { nome: 1, curso: 1, _id: 0 }
+)</code></pre>
+        <div class="result"><b>Resultado</b><pre><code>{ nome: "Ana Silva", curso: "LEI" }
+{ nome: "Carla Rocha", curso: "LEI" }</code></pre></div>
+        <h3>Esconder campos</h3>
+        <pre><code>db.aluno.find(
+  {},
+  { email: 0, interesses: 0 }
+)</code></pre>
+        <p>Na projeção usamos normalmente inclusões (<code>1</code>) ou exclusões (<code>0</code>), mas não misturamos as duas. <code>_id</code> é a exceção e pode ser escondido numa projeção de inclusão.</p>
+      </div>
+    </section>
+
+    <section id="agregar" class="chapter">
+      <div class="chapter-number">2.4</div>
+      <div>
+        <p class="eyebrow">Agrupar e guardar</p>
+        <h2>Agregação com $group e $merge</h2>
+        <p>Uma agregação é uma sequência de etapas. Cada etapa recebe os documentos produzidos pela anterior. Para contar alunos por curso, agrupamos pelo campo <code>curso</code> e somamos uma unidade por documento.</p>
+        <pre><code>db.aluno.aggregate([
+  {
+    $group: {
+      _id: "$curso",
+      total: { $sum: 1 }
+    }
+  },
+  { $sort: { total: -1 } }
+])</code></pre>
+        <div class="result"><b>Resultado possível</b><pre><code>{ _id: "LEI",  total: 2 }
+{ _id: "LIGE", total: 1 }</code></pre></div>
+        <p>Aqui, <code>_id</code> representa o valor usado para formar cada grupo. <code>$sum: 1</code> acrescenta um por cada documento do grupo. <code>$sort</code> ordena do maior para o menor.</p>
+        <h3>Guardar o resultado noutra coleção</h3>
+        <pre><code>db.aluno.aggregate([
+  {
+    $group: {
+      _id: "$curso",
+      total: { $sum: 1 }
+    }
+  },
+  {
+    $merge: {
+      into: "resumo_cursos",
+      on: "_id",
+      whenMatched: "replace",
+      whenNotMatched: "insert"
+    }
+  }
+])</code></pre>
+        <p><code>$merge</code> grava o resultado na coleção <code>resumo_cursos</code>. Se um curso já existir, substitui o respetivo resumo; se ainda não existir, insere-o.</p>
+        <pre><code>db.resumo_cursos.find()</code></pre>
+        <div class="result"><b>Resultado</b><pre><code>{ _id: "LEI",  total: 2 }
+{ _id: "LIGE", total: 1 }</code></pre></div>
+      </div>
+    </section>
+
+    <section class="chapter recap">
+      <div class="chapter-number">FIM</div>
+      <div>
+        <p class="eyebrow">O essencial</p>
+        <h2>O que deve ficar desta aula</h2>
+        <ol>
+          <li>Uma base documental guarda documentos em coleções.</li>
+          <li>O MongoDB pode criar a base e a coleção no primeiro <code>insertOne</code>.</li>
+          <li>Documentos da mesma coleção podem ter campos diferentes.</li>
+          <li><code>find</code> filtra documentos e escolhe os campos apresentados.</li>
+          <li><code>aggregate</code> transforma e agrupa documentos; <code>$merge</code> pode guardar o resultado.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+  <footer>NoSQL e MongoDB · Autor: Pedro Ramos</footer>
+</body>
+</html>
