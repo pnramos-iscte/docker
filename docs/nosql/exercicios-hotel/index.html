@@ -23,7 +23,8 @@
 
       <p class="eyebrow space">Uma única coleção</p>
       <h2>A coleção <code>hotel</code></h2>
-      <p>A solução documental usa apenas uma coleção, mas aceita documentos de dois tipos. Os documentos com <code>tipo: "hotel"</code> contêm quartos e reservas. Cada reserva contém o cliente, os quartos usados e as faturas. Os documentos com <code>tipo: "cliente"</code> garantem que também guardamos clientes que nunca fizeram reservas.</p>
+      <p>A solução documental usa apenas uma coleção, mas aceita documentos de dois tipos. Os documentos com <code>tipo: "hotel"</code> contêm quartos e reservas. Cada reserva contém o cliente, os quartos usados e as faturas. Além disso, <b>todos os clientes são documentos autónomos com <code>tipo: "cliente"</code></b>: não são apenas NASA e Continente, nem apenas os clientes sem reservas.</p>
+      <p>Assim, Ana, ISCTE, Pedro, ONU e todos os restantes clientes têm o seu próprio documento. Quando um cliente faz uma reserva, parte dos seus dados também fica embebida nessa reserva. O documento autónomo representa o cliente enquanto entidade; a cópia embebida permite consultar a reserva sem procurar o cliente noutro documento.</p>
       <div class="two-docs">
         <div><h3>Documento de hotel</h3><pre><code>{
   _id: "hotel:RM",
@@ -73,7 +74,7 @@
   ]
 }</code></pre><aside><b>Porque precisamos deste documento?</b><p>Sem documentos de cliente, NASA e Continente desapareceriam, pois não têm reservas. Isto impediria responder corretamente aos exercícios que incluem organizações sem reservas.</p></aside></div>
       </div>
-      <div class="warning"><b>Desnormalização deliberada</b><p>O nome e o tipo do cliente aparecem no documento do cliente e dentro das reservas. Esta duplicação simplifica consultas, mas a aplicação tem de manter as cópias coerentes quando os dados mudam.</p></div>
+      <div class="warning"><b>Desnormalização deliberada</b><p>Um cliente com reservas aparece de duas formas: uma vez como documento autónomo e novamente, de forma embebida, em cada reserva que efetuou. Um cliente sem reservas aparece apenas como documento autónomo. Esta duplicação simplifica consultas, mas a aplicação tem de manter as cópias coerentes quando os dados mudam.</p></div>
     </section>
 
     <section id="exercicios">
@@ -84,6 +85,6 @@
     </section>
   </main>
   <footer>Exercícios MongoDB · Hotel · Autor: Pedro Ramos</footer>
-  <script src="exercises.js?v=2"></script>
+  <script src="exercises.js?v=3"></script>
 </body>
 </html>
