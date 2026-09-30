@@ -22,11 +22,21 @@
     if (answers) return true;
     const password = prompt("Introduza a senha para consultar as resoluções:");
     if (password === null) return false;
+    let encrypted;
     try {
-      const encrypted = await fetch("solutions.enc.json", { cache: "no-store" }).then(response => {
+      encrypted = await fetch("solutions.enc.json", { cache: "no-store" }).then(response => {
         if (!response.ok) throw new Error("load");
         return response.json();
       });
+    } catch (error) {
+      if (location.protocol === "file:") {
+        alert("As resoluções protegidas não podem ser carregadas quando a página é aberta diretamente como ficheiro local. Abra a versão publicada em https://pnramos-iscte.github.io/docker/exercicios-select-hotel/ e use a senha indicada pelo docente.");
+      } else {
+        alert("Não foi possível carregar o ficheiro das resoluções. Atualize a página e tente novamente.");
+      }
+      return false;
+    }
+    try {
       const material = await crypto.subtle.importKey(
         "raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"],
       );

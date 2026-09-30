@@ -29,9 +29,20 @@
     <div class="setup">
       <h2>Antes de começar</h2>
       <p>Antes de resolver os exercícios, confirme que os ficheiros <strong>estruturabdhotel.sql</strong> e <strong>dadosbdhotel.sql</strong> foram colocados na pasta <strong>exemplos</strong>.</p>
+      <p>Antes de entrar no MySQL, é necessário iniciar os contentores:</p>
+      <ol>
+        <li>Abra o PowerShell ou Terminal na pasta que contém o ficheiro <strong>docker-compose.yml</strong>.</li>
+        <li>Inicie os contentores com:</li>
+      </ol>
+      <pre>docker compose up -d</pre>
+      <p>Espere que os contentores arranquem. Pode confirmar o estado com:</p>
+      <pre>docker compose ps</pre>
       <p>Depois:</p>
       <ol>
-        <li>Entre no <strong>Docker</strong> e abra um terminal no contentor do <strong>MySQL</strong>.</li>
+        <li>Abra um terminal no contentor do <strong>MySQL</strong>. Pode fazê-lo no Docker Desktop ou executar:</li>
+      </ol>
+      <pre>docker compose exec mysql bash</pre>
+      <ol start="2">
         <li>Entre no MySQL com:</li>
       </ol>
       <pre>mysql -u root -p</pre>
@@ -489,6 +500,6 @@ Roma       | 2000.00</pre>
   <footer class="footer">
     Exercícios SELECT · Hotel · Autor: Pedro Ramos
   </footer>
-  <script src="solutions.js?v=20260930-1"></script>
+  <script src="solutions.js?v=20260930-2"></script>
 </body>
 </html>
