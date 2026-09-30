@@ -87,13 +87,13 @@
   function presentation(number, answer) {
     if (reviewedExercises.has(number)) {
       return {
-        title: "Resolução revista",
+        title: "Resposta",
         parts: [{ value: answer.reviewed }],
       };
     }
 
     const result = {
-      title: "Resolução de Pedro Ramos",
+      title: "Resposta",
       parts: [{ value: answer.original }],
     };
 
