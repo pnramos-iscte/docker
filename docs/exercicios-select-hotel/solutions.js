@@ -53,15 +53,53 @@
     }
   }
 
-  function block(title, value) {
+  function block(title, parts) {
     const wrap = document.createElement("section");
     const heading = document.createElement("h3");
-    const pre = document.createElement("pre");
     heading.textContent = title;
-    pre.textContent = value;
-    pre.className = "answer-block";
-    wrap.append(heading, pre);
+    wrap.append(heading);
+    parts.forEach((part, index) => {
+      if (index > 0) {
+        const subheading = document.createElement("h4");
+        subheading.textContent = part.title;
+        wrap.append(subheading);
+      }
+      const pre = document.createElement("pre");
+      pre.textContent = part.value;
+      pre.className = "answer-block";
+      wrap.append(pre);
+    });
     return wrap;
+  }
+
+  const reviewedExercises = new Set([3, 4]);
+
+  function presentation(number, answer) {
+    if (reviewedExercises.has(number)) {
+      return {
+        title: "Resolução revista",
+        parts: [{ value: answer.reviewed }],
+      };
+    }
+
+    const result = {
+      title: "Resolução de Pedro Ramos",
+      parts: [{ value: answer.original }],
+    };
+
+    if (number === 5) {
+      result.parts.push({ title: "Alternativa com JOIN", value: answer.reviewed });
+    }
+    if (number === 9) {
+      result.parts[0].value = answer.original.split("\n\n-- Alternativa apresentada")[0];
+    }
+    if (number === 14) {
+      result.parts.push({ title: "Alternativa com WITH", value: answer.reviewed });
+    }
+    if (number === 17) {
+      result.parts.push({ title: "Outra alternativa com MAX", value: answer.reviewed });
+    }
+    return result;
   }
 
   document.querySelectorAll(".show").forEach(button => button.addEventListener("click", async () => {
@@ -69,17 +107,13 @@
     const target = document.getElementById(button.dataset.target);
     if (!target.hasChildNodes()) {
       const answer = answers[button.dataset.target];
-      target.append(
-        block("Resolução de Pedro Ramos", answer.original),
-        block("Solução revista", answer.reviewed),
-      );
-      if (answer.noWith) {
-        target.append(block("Alternativa revista sem WITH", answer.noWith));
-      }
+      const number = Number(button.dataset.target.slice(1));
+      const selected = presentation(number, answer);
+      target.append(block(selected.title, selected.parts));
     }
     target.classList.toggle("open");
     button.textContent = target.classList.contains("open")
-      ? "Ocultar resoluções"
-      : "Ver resoluções";
+      ? "Ocultar resolução"
+      : "Ver resolução";
   }));
 })();
