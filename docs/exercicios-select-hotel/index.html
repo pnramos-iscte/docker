@@ -31,12 +31,12 @@
       <p>Antes de resolver os exercícios, confirme que os ficheiros <strong>estruturabdhotel.sql</strong> e <strong>dadosbdhotel.sql</strong> foram colocados na pasta <strong>exemplos</strong>.</p>
       <p>Antes de entrar no MySQL, é necessário iniciar os contentores:</p>
       <ol>
-        <li>Abra o PowerShell ou Terminal na pasta que contém o ficheiro <strong>docker-compose.yml</strong>.</li>
+        <li>Abra o PowerShell ou Terminal do computador na pasta <strong>MysqlDocker</strong>, onde se encontra o ficheiro <strong>MysqlDocker.yml</strong>.</li>
         <li>Inicie os contentores com:</li>
       </ol>
-      <pre>docker compose up -d</pre>
+      <pre>docker compose -f MysqlDocker.yml up -d</pre>
       <p>Espere que os contentores arranquem. Pode confirmar o estado com:</p>
-      <pre>docker compose ps</pre>
+      <pre>docker compose -f MysqlDocker.yml ps</pre>
       <p>Depois:</p>
       <ol>
         <li>Abra o <strong>Docker Desktop</strong>, entre na lista de contentores e abra o terminal do contentor do <strong>MySQL</strong>.</li>
@@ -46,8 +46,8 @@
       <p>Introduza a senha quando for pedida.</p>
       <details>
         <summary>Alternativa: abrir o terminal do contentor pela linha de comando</summary>
-        <p>No PowerShell ou Terminal, dentro da pasta que contém o ficheiro <strong>docker-compose.yml</strong>, execute:</p>
-        <pre>docker compose exec mysql bash</pre>
+        <p>No PowerShell ou Terminal do computador, dentro da pasta <strong>MysqlDocker</strong>, execute:</p>
+        <pre>docker compose -f MysqlDocker.yml exec mysql bash</pre>
         <p>Quando aparecer o terminal do contentor, entre no MySQL com <code>mysql -u root -p</code>.</p>
       </details>
       <p>Crie a base de dados <strong>hotel</strong> e selecione-a:</p>
