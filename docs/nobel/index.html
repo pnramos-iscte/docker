@@ -114,29 +114,54 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 <article class="challenge"><h3>Primeira tentativa: países de nascimento</h3><p>Escreva um comando <code>INSERT ... SELECT</code> que leia <code>bornCountry</code> e <code>bornCountryCode</code> da tabela <code>premios</code> e acrescente à tabela <code>pais</code> o código e a designação atual.</p><ol><li>Ignore linhas sem código ou sem país de nascimento.</li><li>Quando existir <code>(now ...)</code>, use o país que aparece dentro dos parênteses.</li><li>Nos restantes casos, use a designação de <code>bornCountry</code>.</li><li>Nesta fase, não tente ainda resolver todas as repetições.</li></ol><div class="unlock"><input id="password-insert-born" type="password" autocomplete="off" placeholder="Palavra-passe"><button id="unlock-insert-born" type="button">Mostrar comando</button></div><div class="unlock-status" id="unlock-status-insert-born" aria-live="polite"></div><div class="answer" id="answer-insert-born"><div class="code"><pre><span class="sql">INSERT INTO</span> pais (code, designacao_atual)
 <span class="sql">SELECT DISTINCT</span>
   bornCountryCode,
-  <span class="sql">CASE</span>
-    <span class="sql">WHEN</span> bornCountry LIKE <span class="str">'% (now %'</span>
-    <span class="sql">THEN</span> TRIM(TRAILING <span class="str">')'</span> FROM
-      SUBSTRING_INDEX(bornCountry, <span class="str">' (now '</span>, -1))
-    <span class="sql">ELSE</span> bornCountry
-  <span class="sql">END</span>
+  bornCountry
 <span class="sql">FROM</span> premios
 <span class="sql">WHERE</span> bornCountryCode IS NOT NULL
-  <span class="sql">AND</span> bornCountry IS NOT NULL;</pre></div><div class="callout"><strong>Porque usamos <code>DISTINCT</code>?</strong> Remove as repetições exatamente iguais produzidas por muitos laureados do mesmo país. Não resolve ainda os casos em que o mesmo código surge com designações diferentes.</div></div><div class="callout warn"><strong>A tabela ainda não está terminada.</strong> Até agora só observámos o país de nascimento. Antes de limpar os dados, escolher uma linha por código e criar a PK, temos também de analisar <code>diedCountry</code> e <code>diedCountryCode</code>.</div></article>
+  <span class="sql">AND</span> bornCountry IS NOT NULL
+  <span class="sql">AND</span> bornCountry NOT LIKE <span class="str">'% (now %'</span>
+
+<span class="sql">UNION</span>
+
+<span class="sql">SELECT DISTINCT</span>
+  bornCountryCode,
+  TRIM(TRAILING <span class="str">')'</span> FROM
+    SUBSTRING_INDEX(bornCountry, <span class="str">' (now '</span>, -1))
+  )
+<span class="sql">FROM</span> premios
+<span class="sql">WHERE</span> bornCountryCode IS NOT NULL
+  <span class="sql">AND</span> bornCountry LIKE <span class="str">'% (now %'</span>;</pre></div><div class="callout"><strong>Sem <code>CASE</code>:</strong> o primeiro <code>SELECT</code> trata os nomes simples; o segundo trata os valores com <code>(now ...)</code>. O <code>UNION</code> junta os dois resultados e elimina linhas iguais.</div></div><div class="callout warn"><strong>A tabela ainda não está terminada.</strong> Até agora só observámos o país de nascimento. Antes de limpar os dados, escolher uma linha por código e criar a PK, temos também de analisar <code>diedCountry</code> e <code>diedCountryCode</code>.</div></article>
 
 <div class="head" style="margin-top:58px"><div class="num">07.3</div><div><h2>Acrescentar os países de falecimento</h2><p class="lede">Alguns países podem surgir apenas nos campos relativos ao falecimento. Vamos agora acrescentá-los à mesma tabela provisória.</p></div></div>
+<article class="challenge"><h3>Existem países de falecimento que não aparecem nos nascimentos?</h3><p>Antes de inserir, escreva uma consulta que mostre os códigos e as designações presentes em <code>diedCountryCode</code>/<code>diedCountry</code> cujo código nunca aparece em <code>bornCountryCode</code>.</p><div class="unlock"><input id="password-missing-died" type="password" autocomplete="off" placeholder="Palavra-passe"><button id="unlock-missing-died" type="button">Mostrar comando e resultado</button></div><div class="unlock-status" id="unlock-status-missing-died" aria-live="polite"></div><div class="answer" id="answer-missing-died"><div class="code"><pre><span class="sql">SELECT DISTINCT</span>
+  d.diedCountryCode,
+  d.diedCountry
+<span class="sql">FROM</span> premios AS d
+<span class="sql">WHERE</span> d.diedCountryCode IS NOT NULL
+  <span class="sql">AND NOT EXISTS</span> (
+    <span class="sql">SELECT</span> 1
+    <span class="sql">FROM</span> premios AS b
+    <span class="sql">WHERE</span> b.bornCountryCode = d.diedCountryCode
+  )
+<span class="sql">ORDER BY</span> d.diedCountryCode, d.diedCountry;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado: 9 linhas</div><table><thead><tr><th>diedCountryCode</th><th>diedCountry</th></tr></thead><tbody><tr><td>BB</td><td>Barbados</td></tr><tr><td>GA</td><td>Gabon</td></tr><tr><td>JM</td><td>Jamaica</td></tr><tr><td>PH</td><td>Philippines</td></tr><tr><td>PR</td><td>Puerto Rico</td></tr><tr><td>RS</td><td>Yugoslavia (now Serbia)</td></tr><tr><td>SG</td><td>Singapore</td></tr><tr><td>TN</td><td>Tunisia</td></tr><tr><td>ZM</td><td>Northern Rhodesia (now Zambia)</td></tr></tbody></table></div><div class="callout"><strong>Conclusão:</strong> sim. Há nove códigos presentes nos países de falecimento que nunca aparecem nos países de nascimento. Se ignorássemos <code>diedCountry</code>, a tabela <code>pais</code> ficaria incompleta.</div></div></article>
 <article class="challenge"><h3>Adapte o comando anterior</h3><p>Escreva um segundo <code>INSERT ... SELECT</code>, agora usando <code>diedCountry</code> e <code>diedCountryCode</code>. Mantenha as mesmas regras para os valores com <code>(now ...)</code> e para os valores <code>NULL</code>.</p><div class="unlock"><input id="password-insert-died" type="password" autocomplete="off" placeholder="Palavra-passe"><button id="unlock-insert-died" type="button">Mostrar comando</button></div><div class="unlock-status" id="unlock-status-insert-died" aria-live="polite"></div><div class="answer" id="answer-insert-died"><div class="code"><pre><span class="sql">INSERT INTO</span> pais (code, designacao_atual)
 <span class="sql">SELECT DISTINCT</span>
   diedCountryCode,
-  <span class="sql">CASE</span>
-    <span class="sql">WHEN</span> diedCountry LIKE <span class="str">'% (now %'</span>
-    <span class="sql">THEN</span> TRIM(TRAILING <span class="str">')'</span> FROM
-      SUBSTRING_INDEX(diedCountry, <span class="str">' (now '</span>, -1))
-    <span class="sql">ELSE</span> diedCountry
-  <span class="sql">END</span>
+  diedCountry
 <span class="sql">FROM</span> premios
 <span class="sql">WHERE</span> diedCountryCode IS NOT NULL
-  <span class="sql">AND</span> diedCountry IS NOT NULL;</pre></div></div><div class="callout warn"><strong>Ainda não crie a PK.</strong> Depois destes dois <code>INSERT</code>, a tabela pode conter códigos repetidos e até designações diferentes para o mesmo código. Na fase seguinte iremos observar e limpar esses casos.</div><p><strong>Por agora:</strong> execute <code>SELECT * FROM pais ORDER BY code, designacao_atual;</code> e observe o resultado.</p></article>
+  <span class="sql">AND</span> diedCountry IS NOT NULL
+  <span class="sql">AND</span> diedCountry NOT LIKE <span class="str">'% (now %'</span>
+
+<span class="sql">UNION</span>
+
+<span class="sql">SELECT DISTINCT</span>
+  diedCountryCode,
+  TRIM(TRAILING <span class="str">')'</span> FROM
+    SUBSTRING_INDEX(diedCountry, <span class="str">' (now '</span>, -1))
+  )
+<span class="sql">FROM</span> premios
+<span class="sql">WHERE</span> diedCountryCode IS NOT NULL
+  <span class="sql">AND</span> diedCountry LIKE <span class="str">'% (now %'</span>;</pre></div></div><div class="callout warn"><strong>Ainda não crie a PK.</strong> Depois destes dois <code>INSERT</code>, a tabela pode conter códigos repetidos e até designações diferentes para o mesmo código. Na fase seguinte iremos observar e limpar esses casos.</div><p><strong>Por agora:</strong> execute <code>SELECT * FROM pais ORDER BY code, designacao_atual;</code> e observe o resultado.</p></article>
 </section>
 
 <section class="summary"><h2>O percurso desta aula</h2><div class="grid"><div class="card"><h3>1 · Importar</h3><p>Criou a base de dados <code>nobel</code> e executou um ficheiro SQL com <code>SOURCE</code>.</p></div><div class="card"><h3>2 · Conhecer</h3><p>Usou <code>SHOW TABLES</code> e <code>DESCRIBE</code> para perceber o que existe.</p></div><div class="card"><h3>3 · Consultar</h3><p>Usou <code>SELECT</code>, <code>LIMIT</code>, <code>\G</code> e um primeiro filtro com <code>WHERE</code>.</p></div></div></section>
@@ -152,6 +177,8 @@ async function unlockCountry(){const input=document.getElementById('password-cou
 document.getElementById('unlock-country').addEventListener('click',unlockCountry);document.getElementById('password-country').addEventListener('keydown',e=>{if(e.key==='Enter')unlockCountry()});
 async function unlockInsertBorn(){const input=document.getElementById('password-insert-born');const status=document.getElementById('unlock-status-insert-born');if(await sha256(input.value)===expectedHash){document.getElementById('answer-insert-born').classList.add('open');status.textContent='Comando desbloqueado.';status.style.color='#13795b';input.value=''}else{status.textContent='Palavra-passe incorreta.';status.style.color='#b73546';input.select()}}
 document.getElementById('unlock-insert-born').addEventListener('click',unlockInsertBorn);document.getElementById('password-insert-born').addEventListener('keydown',e=>{if(e.key==='Enter')unlockInsertBorn()});
+async function unlockMissingDied(){const input=document.getElementById('password-missing-died');const status=document.getElementById('unlock-status-missing-died');if(await sha256(input.value)===expectedHash){document.getElementById('answer-missing-died').classList.add('open');status.textContent='Comando e resultado desbloqueados.';status.style.color='#13795b';input.value=''}else{status.textContent='Palavra-passe incorreta.';status.style.color='#b73546';input.select()}}
+document.getElementById('unlock-missing-died').addEventListener('click',unlockMissingDied);document.getElementById('password-missing-died').addEventListener('keydown',e=>{if(e.key==='Enter')unlockMissingDied()});
 async function unlockInsertDied(){const input=document.getElementById('password-insert-died');const status=document.getElementById('unlock-status-insert-died');if(await sha256(input.value)===expectedHash){document.getElementById('answer-insert-died').classList.add('open');status.textContent='Comando desbloqueado.';status.style.color='#13795b';input.value=''}else{status.textContent='Palavra-passe incorreta.';status.style.color='#b73546';input.select()}}
 document.getElementById('unlock-insert-died').addEventListener('click',unlockInsertDied);document.getElementById('password-insert-died').addEventListener('keydown',e=>{if(e.key==='Enter')unlockInsertDied()});
 </script>
