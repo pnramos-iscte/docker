@@ -95,15 +95,16 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
   bornCountry AS campo_original,
   TRIM(SUBSTRING_INDEX(bornCountry, <span class="str">' (now '</span>, 1))
     AS pais_antigo,
-  TRIM(TRAILING <span class="str">')'</span> FROM
-    SUBSTRING_INDEX(bornCountry, <span class="str">' (now '</span>, -1))
-  ) AS pais_atual,
+  TRIM(SUBSTRING_INDEX(
+    SUBSTRING_INDEX(bornCountry, <span class="str">' (now '</span>, -1),
+    <span class="str">')'</span>, 1
+  )) AS pais_atual,
   bornCountryCode AS codigo_atual
 <span class="sql">FROM</span> premios
 <span class="sql">WHERE</span> bornCountry LIKE <span class="str">'% (now %'</span>
 <span class="sql">LIMIT</span> 10;</pre></div>
 <div class="result" style="margin-top:22px"><div class="result-title">Resultado</div><table><thead><tr><th>campo_original</th><th>pais_antigo</th><th>pais_atual</th><th>codigo_atual</th></tr></thead><tbody><tr><td>Hungary (now Slovakia)</td><td>Hungary</td><td>Slovakia</td><td>SK</td></tr><tr><td>Prussia (now Germany)</td><td>Prussia</td><td>Germany</td><td>DE</td></tr><tr><td>Prussia (now Poland)</td><td>Prussia</td><td>Poland</td><td>PL</td></tr><tr><td>Hesse-Kassel (now Germany)</td><td>Hesse-Kassel</td><td>Germany</td><td>DE</td></tr><tr><td>Russian Empire (now Poland)</td><td>Russian Empire</td><td>Poland</td><td>PL</td></tr><tr><td>Prussia (now Russia)</td><td>Prussia</td><td>Russia</td><td>RU</td></tr><tr><td>Schleswig (now Germany)</td><td>Schleswig</td><td>Germany</td><td>DE</td></tr><tr><td>Austria-Hungary (now Poland)</td><td>Austria-Hungary</td><td>Poland</td><td>PL</td></tr><tr><td>Germany (now Poland)</td><td>Germany</td><td>Poland</td><td>PL</td></tr><tr><td>Austria-Hungary (now Hungary)</td><td>Austria-Hungary</td><td>Hungary</td><td>HU</td></tr></tbody></table></div>
-<div class="callout"><strong>O que faz <code>TRIM</code>?</strong> <code>TRIM(texto)</code> retira espaços no início e no fim do texto. Na forma <code>TRIM(TRAILING ')' FROM texto)</code>, a palavra <code>TRAILING</code> indica que queremos retirar o caráter <code>)</code> apenas do fim. Assim, depois de obter <code>Germany)</code>, ficamos com <code>Germany</code>.</div><div class="callout"><strong>Leitura da expressão:</strong> a primeira chamada fica com o que está à esquerda de <code> (now </code>. A segunda fica com o que está à direita. O <code>WHERE</code> limita a consulta às linhas que têm este formato.</div></div>
+<div class="callout"><strong>O que faz <code>TRIM</code>?</strong> <code>TRIM(texto)</code> retira espaços no início e no fim do texto. Para retirar o parêntese final, aplicamos novamente <code>SUBSTRING_INDEX</code>: em <code>Germany)</code>, separamos pelo caráter <code>)</code> e conservamos a primeira parte.</div><div class="callout"><strong>Leitura da expressão:</strong> a chamada interior fica com o que está à direita de <code> (now </code>; a chamada exterior retira o <code>)</code>. O <code>WHERE</code> limita a consulta às linhas que têm este formato.</div></div>
 </article>
 
 <div class="head" style="margin-top:58px"><div class="num">07.2</div><div><h2>Começar a construir a tabela <code>pais</code></h2><p class="lede">Vamos por partes. Nesta primeira versão ainda não existe chave primária: os dados podem revelar repetições e outros problemas que teremos de resolver.</p></div></div>
@@ -124,9 +125,10 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 
 <span class="sql">SELECT DISTINCT</span>
   bornCountryCode,
-  TRIM(TRAILING <span class="str">')'</span> FROM
-    SUBSTRING_INDEX(bornCountry, <span class="str">' (now '</span>, -1))
-  )
+  TRIM(SUBSTRING_INDEX(
+    SUBSTRING_INDEX(bornCountry, <span class="str">' (now '</span>, -1),
+    <span class="str">')'</span>, 1
+  ))
 <span class="sql">FROM</span> premios
 <span class="sql">WHERE</span> bornCountryCode IS NOT NULL
   <span class="sql">AND</span> bornCountry LIKE <span class="str">'% (now %'</span>;</pre></div><div class="callout"><strong>Duas partes:</strong> o primeiro <code>SELECT</code> trata os nomes simples; o segundo trata os valores com <code>(now ...)</code>. O <code>UNION</code> junta os dois resultados e elimina linhas iguais.</div></div><div class="callout warn"><strong>A tabela ainda não está terminada.</strong> Até agora só observámos o país de nascimento. Antes de limpar os dados, escolher uma linha por código e criar a PK, temos também de analisar <code>diedCountry</code> e <code>diedCountryCode</code>.</div></article>
@@ -156,9 +158,10 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 
 <span class="sql">SELECT DISTINCT</span>
   diedCountryCode,
-  TRIM(TRAILING <span class="str">')'</span> FROM
-    SUBSTRING_INDEX(diedCountry, <span class="str">' (now '</span>, -1))
-  )
+  TRIM(SUBSTRING_INDEX(
+    SUBSTRING_INDEX(diedCountry, <span class="str">' (now '</span>, -1),
+    <span class="str">')'</span>, 1
+  ))
 <span class="sql">FROM</span> premios
 <span class="sql">WHERE</span> diedCountryCode IS NOT NULL
   <span class="sql">AND</span> diedCountry LIKE <span class="str">'% (now %'</span>;</pre></div><div class="callout"><strong>E se usássemos <code>UNION ALL</code>?</strong> <code>UNION</code> elimina linhas iguais entre os dois resultados. <code>UNION ALL</code> conservaria todas as linhas, incluindo uma combinação repetida quando um país já aparece com o nome atual e também numa designação histórica com <code>(now ...)</code>. A tabela provisória ficaria com ainda mais duplicados.</div></div><div class="callout warn"><strong>A tabela pode conter códigos repetidos.</strong> Os dois <code>INSERT</code> trouxeram dados de origens diferentes e ainda não resolvemos as repetições nem as designações diferentes para o mesmo código.</div><p><strong>Por agora:</strong> execute <code>SELECT * FROM pais ORDER BY code, designacao_atual;</code> e observe o resultado.</p></article>
