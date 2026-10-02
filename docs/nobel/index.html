@@ -146,25 +146,34 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
   )
 <span class="sql">ORDER BY</span> d.diedCountryCode, d.diedCountry;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado: 9 linhas</div><table><thead><tr><th>diedCountryCode</th><th>diedCountry</th></tr></thead><tbody><tr><td>BB</td><td>Barbados</td></tr><tr><td>GA</td><td>Gabon</td></tr><tr><td>JM</td><td>Jamaica</td></tr><tr><td>PH</td><td>Philippines</td></tr><tr><td>PR</td><td>Puerto Rico</td></tr><tr><td>RS</td><td>Yugoslavia (now Serbia)</td></tr><tr><td>SG</td><td>Singapore</td></tr><tr><td>TN</td><td>Tunisia</td></tr><tr><td>ZM</td><td>Northern Rhodesia (now Zambia)</td></tr></tbody></table></div><div class="callout"><strong>Conclusão:</strong> sim. Há nove códigos presentes nos países de falecimento que nunca aparecem nos países de nascimento. Se ignorássemos <code>diedCountry</code>, a tabela <code>pais</code> ficaria incompleta.</div></div></article>
 <article class="challenge"><h3>Adapte o comando anterior</h3><p>Escreva um segundo <code>INSERT ... SELECT</code>, agora usando <code>diedCountry</code> e <code>diedCountryCode</code>. Mantenha as mesmas regras para os valores com <code>(now ...)</code> e para os valores <code>NULL</code>.</p><div class="unlock"><input id="password-insert-died" type="password" autocomplete="off" placeholder="Palavra-passe"><button id="unlock-insert-died" type="button">Mostrar comando</button></div><div class="unlock-status" id="unlock-status-insert-died" aria-live="polite"></div><div class="answer" id="answer-insert-died"><div class="code"><pre><span class="sql">INSERT INTO</span> pais (code, designacao_atual)
-<span class="sql">SELECT DISTINCT</span>
-  diedCountryCode,
-  diedCountry
-<span class="sql">FROM</span> premios
-<span class="sql">WHERE</span> diedCountryCode IS NOT NULL
-  <span class="sql">AND</span> diedCountry IS NOT NULL
-  <span class="sql">AND</span> diedCountry NOT LIKE <span class="str">'% (now %'</span>
+<span class="sql">SELECT</span> novos.code, novos.designacao_atual
+<span class="sql">FROM</span> (
+  <span class="sql">SELECT DISTINCT</span>
+    diedCountryCode AS code,
+    diedCountry AS designacao_atual
+  <span class="sql">FROM</span> premios
+  <span class="sql">WHERE</span> diedCountryCode IS NOT NULL
+    <span class="sql">AND</span> diedCountry IS NOT NULL
+    <span class="sql">AND</span> diedCountry NOT LIKE <span class="str">'% (now %'</span>
 
-<span class="sql">UNION</span>
+  <span class="sql">UNION</span>
 
-<span class="sql">SELECT DISTINCT</span>
-  diedCountryCode,
-  TRIM(SUBSTRING_INDEX(
-    SUBSTRING_INDEX(diedCountry, <span class="str">' (now '</span>, -1),
-    <span class="str">')'</span>, 1
-  ))
-<span class="sql">FROM</span> premios
-<span class="sql">WHERE</span> diedCountryCode IS NOT NULL
-  <span class="sql">AND</span> diedCountry LIKE <span class="str">'% (now %'</span>;</pre></div><div class="callout"><strong>E se usássemos <code>UNION ALL</code>?</strong> <code>UNION</code> elimina linhas iguais entre os dois resultados. <code>UNION ALL</code> conservaria todas as linhas, incluindo uma combinação repetida quando um país já aparece com o nome atual e também numa designação histórica com <code>(now ...)</code>. A tabela provisória ficaria com ainda mais duplicados.</div></div><div class="callout warn"><strong>A tabela pode conter códigos repetidos.</strong> Os dois <code>INSERT</code> trouxeram dados de origens diferentes e ainda não resolvemos as repetições nem as designações diferentes para o mesmo código.</div><p><strong>Por agora:</strong> execute <code>SELECT * FROM pais ORDER BY code, designacao_atual;</code> e observe o resultado.</p></article>
+  <span class="sql">SELECT DISTINCT</span>
+    diedCountryCode AS code,
+    TRIM(SUBSTRING_INDEX(
+      SUBSTRING_INDEX(diedCountry, <span class="str">' (now '</span>, -1),
+      <span class="str">')'</span>, 1
+    )) AS designacao_atual
+  <span class="sql">FROM</span> premios
+  <span class="sql">WHERE</span> diedCountryCode IS NOT NULL
+    <span class="sql">AND</span> diedCountry LIKE <span class="str">'% (now %'</span>
+) AS novos
+<span class="sql">WHERE NOT EXISTS</span> (
+  <span class="sql">SELECT</span> 1
+  <span class="sql">FROM</span> pais AS p
+  <span class="sql">WHERE</span> p.code = novos.code
+    <span class="sql">AND</span> p.designacao_atual = novos.designacao_atual
+);</pre></div><div class="callout"><strong>O papel de <code>NOT EXISTS</code>:</strong> <code>novos</code> contém as combinações obtidas dos campos de falecimento. Antes de inserir cada uma, verificamos se a mesma combinação de código e designação já existe em <code>pais</code>. Se existir, não é inserida novamente.</div></div><div class="callout warn"><strong>Ainda podem existir códigos repetidos.</strong> Já não há combinações exatamente iguais, mas um mesmo código pode estar associado a designações diferentes.</div><p><strong>Por agora:</strong> execute <code>SELECT * FROM pais ORDER BY code, designacao_atual;</code> e observe o resultado.</p></article>
 
 <div class="head" style="margin-top:58px"><div class="num">07.4</div><div><h2>Tentar criar a chave primária</h2><p class="lede">Já reunimos os países de nascimento e de falecimento. Vamos testar se <code>code</code> está pronto para identificar cada linha.</p></div></div>
 <div class="lesson"><div class="code"><pre><span class="sql">ALTER TABLE</span> pais
@@ -173,12 +182,12 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 <span class="sql">FROM</span> pais
 <span class="sql">GROUP BY</span> code
 <span class="sql">HAVING COUNT</span>(*) &gt; 1
-<span class="sql">ORDER BY</span> code;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado: 37 códigos repetidos</div><table><thead><tr><th>code</th><th>COUNT(*)</th><th>code</th><th>COUNT(*)</th><th>code</th><th>COUNT(*)</th></tr></thead><tbody><tr><td>AR</td><td>2</td><td>AT</td><td>2</td><td>AU</td><td>2</td></tr><tr><td>BE</td><td>2</td><td>CA</td><td>2</td><td>CH</td><td>2</td></tr><tr><td>CL</td><td>2</td><td>CN</td><td>2</td><td>CZ</td><td>2</td></tr><tr><td>DE</td><td>2</td><td>DK</td><td>3</td><td>EG</td><td>2</td></tr><tr><td>ES</td><td>2</td><td>FI</td><td>2</td><td>FR</td><td>2</td></tr><tr><td>GB</td><td>6</td><td>GR</td><td>2</td><td>HU</td><td>2</td></tr><tr><td>IE</td><td>2</td><td>IL</td><td>2</td><td>IN</td><td>2</td></tr><tr><td>IS</td><td>2</td><td>IT</td><td>2</td><td>JP</td><td>2</td></tr><tr><td>KE</td><td>2</td><td>LC</td><td>2</td><td>MX</td><td>2</td></tr><tr><td>NL</td><td>2</td><td>NO</td><td>2</td><td>PL</td><td>2</td></tr><tr><td>PT</td><td>2</td><td>RO</td><td>2</td><td>RU</td><td>2</td></tr><tr><td>SE</td><td>2</td><td>US</td><td>2</td><td>VN</td><td>2</td></tr><tr><td>ZA</td><td>2</td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+<span class="sql">ORDER BY</span> code;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado: 2 códigos repetidos</div><table><thead><tr><th>code</th><th>COUNT(*)</th></tr></thead><tbody><tr><td>DK</td><td>2</td></tr><tr><td>GB</td><td>3</td></tr></tbody></table></div>
 <div class="code" style="margin-top:22px"><pre><span class="sql">SELECT</span> *
 <span class="sql">FROM</span> pais
 <span class="sql">WHERE</span> code = <span class="str">'DK'</span>
    <span class="sql">OR</span> code = <span class="str">'GB'</span>
-<span class="sql">ORDER BY</span> code, designacao_atual;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado</div><table><thead><tr><th>code</th><th>designacao_atual</th></tr></thead><tbody><tr><td>DK</td><td>Denmark</td></tr><tr><td>DK</td><td>Denmark</td></tr><tr><td>DK</td><td>Faroe Islands (Denmark)</td></tr><tr><td>GB</td><td>Northern Ireland</td></tr><tr><td>GB</td><td>Northern Ireland</td></tr><tr><td>GB</td><td>Scotland</td></tr><tr><td>GB</td><td>Scotland</td></tr><tr><td>GB</td><td>United Kingdom</td></tr><tr><td>GB</td><td>United Kingdom</td></tr></tbody></table></div><div class="callout"><strong>Há dois tipos de problema.</strong> Muitos códigos têm linhas exatamente iguais, provenientes dos dois <code>INSERT</code>. Em <code>DK</code> e <code>GB</code> há também designações diferentes para o mesmo código.</div></div></article>
+<span class="sql">ORDER BY</span> code, designacao_atual;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado</div><table><thead><tr><th>code</th><th>designacao_atual</th></tr></thead><tbody><tr><td>DK</td><td>Denmark</td></tr><tr><td>DK</td><td>Faroe Islands (Denmark)</td></tr><tr><td>GB</td><td>Northern Ireland</td></tr><tr><td>GB</td><td>Scotland</td></tr><tr><td>GB</td><td>United Kingdom</td></tr></tbody></table></div><div class="callout"><strong>O problema ficou isolado.</strong> Não existem combinações exatamente iguais. Os códigos <code>DK</code> e <code>GB</code> repetem-se apenas porque estão associados a designações diferentes.</div></div></article>
 
 <div class="head" style="margin-top:58px"><div class="num">07.5</div><div><h2>E agora, o que fazemos?</h2><p class="lede">Antes de criar a PK, temos de escolher uma designação atual por código e eliminar as linhas repetidas.</p></div></div>
 <div class="callout"><strong>Sugestão de decisão:</strong> usar <em>Denmark</em> para <code>DK</code> e <em>United Kingdom</em> para <code>GB</code>. Esta é uma decisão de limpeza dos dados: o código representa o país atual, enquanto as designações regionais ou históricas permanecem guardadas nos campos originais de <code>premios</code>.</div>
