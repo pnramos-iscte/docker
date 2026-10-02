@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Aula introdutória de SQL com a base de dados dos Prémios Nobel.">
+<title>SQL com os Prémios Nobel · Pedro Ramos</title>
+<style>
+:root{--navy:#102a43;--teal:#087f8c;--cyan:#45bcc4;--gold:#f2b134;--paper:#f4f7f8;--white:#fff;--ink:#17212b;--muted:#5f6f7d;--line:#d5e0e5;--soft:#def3f1;--warn:#fff5d9}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.62 system-ui,-apple-system,"Segoe UI",sans-serif}.top{position:sticky;top:0;z-index:5;background:rgba(16,42,67,.97);color:white;display:flex;align-items:center;gap:28px;padding:15px max(24px,calc((100vw - 1180px)/2));box-shadow:0 5px 20px #102a4322}.brand{font-weight:900;letter-spacing:.12em}.top nav{display:flex;gap:18px;flex-wrap:wrap}.top a{color:#d9eef1;text-decoration:none;font-size:14px;font-weight:700}.hero{background:var(--navy);color:white;padding:76px max(24px,calc((100vw - 1140px)/2)) 86px;display:grid;grid-template-columns:1.15fr .85fr;gap:58px}.eyebrow{color:var(--cyan);font-weight:900;letter-spacing:.16em;font-size:13px}.author{margin:8px 0 18px;color:#c6d8e2;font-weight:700}.hero h1{font-size:clamp(48px,7vw,88px);line-height:.98;margin:0 0 25px}.hero p{font-size:21px;color:#d6e4eb;max-width:720px}.hero-card{align-self:center;border:1px solid #ffffff35;border-radius:20px;padding:30px;background:#ffffff0b}.hero-card code{font:17px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}.start,.download{display:inline-block;margin:15px 10px 0 0;padding:13px 19px;border-radius:8px;text-decoration:none;font-weight:900}.start{background:var(--gold);color:var(--navy)}.download{border:1px solid #77cad0;color:white}main{max-width:1140px;margin:auto;padding:0 24px 90px}.chapter{padding:72px 0;border-bottom:1px solid var(--line)}.head{display:grid;grid-template-columns:90px 1fr;gap:22px;align-items:start}.num{font-weight:950;font-size:25px;color:var(--teal);letter-spacing:.08em}.head h2{margin:0;font-size:42px;line-height:1.1;color:var(--navy)}.lede{font-size:21px;color:var(--muted);max-width:880px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:28px}.card,.callout{background:white;border:1px solid var(--line);border-radius:15px;padding:24px}.card{border-top:6px solid var(--teal)}.card h3,.explain h3{color:var(--navy);margin:0 0 10px}.callout{margin:24px 0;border-left:7px solid var(--teal);border-radius:4px}.callout.warn{background:var(--warn);border-left-color:var(--gold)}.lesson{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:30px 0}.code{background:#0d2235;color:#eef8fa;border-radius:15px;padding:25px;overflow:auto}.code pre{margin:0;font:15px/1.58 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}.sql{color:#60d3d8;font-weight:800}.str{color:#ffd37b}.cm{color:#94a8b6}.explain,.result{background:white;border:1px solid var(--line);border-radius:15px;padding:24px}.result{grid-column:1/-1;padding:0;overflow:hidden}.result-title{background:var(--teal);color:white;font-weight:900;padding:11px 18px}.result-note{padding:15px 18px;color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}th{background:#e8f1f3;color:var(--navy)}code{background:#e7eef1;padding:.1em .3em;border-radius:4px}pre code,.hero code{background:none;padding:0}.steps{counter-reset:step;list-style:none;padding:0;margin:26px 0}.steps li{counter-increment:step;background:white;border:1px solid var(--line);border-radius:13px;padding:18px 20px 18px 67px;margin:13px 0;position:relative}.steps li:before{content:counter(step);position:absolute;left:19px;top:17px;width:31px;height:31px;display:grid;place-items:center;border-radius:50%;background:var(--teal);color:white;font-weight:900}.tag{display:inline-block;background:var(--soft);color:var(--teal);font-size:13px;font-weight:900;padding:4px 9px;border-radius:20px}.summary{background:var(--navy);color:white;margin-top:65px;padding:45px;border-radius:20px}.summary h2{font-size:38px;margin-top:0}.summary .grid .card{color:var(--ink)}@media(max-width:800px){.hero,.lesson,.grid{grid-template-columns:1fr}.head{grid-template-columns:1fr}.top nav{display:none}.result{grid-column:auto}.hero h1{font-size:52px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">SQL · NOBEL</div><nav><a href="#preparar">Preparar</a><a href="#importar">Importar</a><a href="#estrutura">Estrutura</a><a href="#consultar">Consultar</a><a href="#premios">Vários prémios</a></nav></header>
+
+<section class="hero"><div><div class="eyebrow">BASES DE DADOS · AULA SQL</div><div class="author">Autor: Pedro Ramos</div><h1>SQL com os<br>Prémios Nobel</h1><p>Um primeiro contacto com uma base de dados real: importar o ficheiro, conhecer a tabela e começar a escolher a informação que queremos consultar.</p><a class="start" href="#preparar">Começar ↓</a><a class="download" href="exportpremios.sql" download>Descarregar exportpremios.sql</a></div><div class="hero-card"><code><span class="sql">CREATE DATABASE</span> nobel;<br><span class="sql">USE</span> nobel;<br><br><span class="sql">SOURCE</span> /exemplos/exportpremios.sql;<br><br><span class="sql">SELECT</span> firstname, surname,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prizes_0_year<br><span class="sql">FROM</span> premios<br><span class="sql">LIMIT</span> 5;</code></div></section>
+
+<main>
+<section class="chapter" id="preparar"><div class="head"><div class="num">01</div><div><h2>Preparar o ficheiro</h2><p class="lede">O contentor MySQL precisa de conseguir ver o ficheiro SQL. Para isso, guarde-o na pasta <code>exemplos</code> do ambiente Docker.</p></div></div>
+<ol class="steps"><li>Descarregue <code>exportpremios.sql</code> através do botão no início desta página.</li><li>Localize no computador a pasta do projeto Docker que contém <code>MysqlDocker.yml</code>.</li><li>Coloque o ficheiro em <code>exemplos/exportpremios.sql</code>. Não altere o nome.</li></ol>
+<div class="callout"><strong>Porque usamos a pasta <code>exemplos</code>?</strong> No ambiente fornecido, esta pasta do computador é partilhada com o contentor. Dentro do MySQL, o mesmo ficheiro fica disponível em <code>/exemplos/exportpremios.sql</code>.</div>
+</section>
+
+<section class="chapter" id="importar"><div class="head"><div class="num">02</div><div><h2>Entrar no MySQL e importar</h2><p class="lede">Abra o terminal do contentor MySQL no Docker Desktop. É nesse terminal que vai iniciar o cliente de linha de comandos do MySQL.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="cm"># No terminal do contentor MySQL</span>
+mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><code>mysql</code> abre o cliente; <code>-u root</code> escolhe o utilizador <em>root</em>; <code>-p</code> pede a palavra-passe. Ao escrevê-la, os caracteres não aparecem no ecrã — é normal.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">CREATE DATABASE</span> nobel;
+<span class="sql">USE</span> nobel;
+<span class="sql">SOURCE</span> /exemplos/exportpremios.sql;</pre></div><div class="explain"><h3>Três passos distintos</h3><p><code>CREATE DATABASE</code> cria a base de dados. <code>USE</code> torna-a ativa. <code>SOURCE</code> lê e executa todos os comandos do ficheiro, criando a tabela <code>premios</code> e inserindo os dados.</p></div></div>
+<div class="callout warn"><strong>Atenção ao ponto e vírgula.</strong> Cada comando termina com <code>;</code>. Aguarde até o <code>SOURCE</code> terminar e o prompt <code>mysql&gt;</code> voltar a aparecer.</div>
+</section>
+
+<section class="chapter" id="estrutura"><div class="head"><div class="num">03</div><div><h2>Confirmar a tabela e conhecer a estrutura</h2><p class="lede">Antes de consultar dados, confirme o que foi criado e descubra os nomes e os tipos das colunas.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SHOW TABLES</span>;</pre></div><div class="explain"><h3>Que tabelas existem?</h3><p>O resultado deve incluir uma tabela chamada <code>premios</code>. Se não aparecer, confirme que executou <code>USE nobel;</code> e que a importação terminou sem erros.</p></div><div class="result"><div class="result-title">Resultado esperado</div><table><thead><tr><th>Tables_in_nobel</th></tr></thead><tbody><tr><td>premios</td></tr></tbody></table></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">DESCRIBE</span> premios;</pre></div><div class="explain"><h3>Como está organizada?</h3><p>É apresentada uma linha por coluna. <strong>Field</strong> é o nome, <strong>Type</strong> é o tipo de dados, <strong>Null</strong> indica se pode faltar um valor e <strong>Key</strong> assinala chaves.</p></div></div>
+<div class="grid"><div class="card"><h3>Identificação</h3><p><code>id</code>, <code>firstname</code>, <code>surname</code> e <code>gender</code>.</p></div><div class="card"><h3>Vida e geografia</h3><p><code>born</code>, <code>died</code>, países, códigos e cidades de nascimento e morte.</p></div><div class="card"><h3>Prémios</h3><p>Grupos de colunas que começam por <code>prizes_0_</code>, <code>prizes_1_</code> e <code>prizes_2_</code>.</p></div></div>
+</section>
+
+<section class="chapter" id="consultar"><div class="head"><div class="num">04</div><div><h2>Consultar os primeiros dados</h2><p class="lede"><code>SELECT</code> escolhe o que queremos ver; <code>FROM</code> identifica a tabela; <code>LIMIT</code> impede que apareçam demasiadas linhas de uma só vez.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> *
+<span class="sql">FROM</span> premios
+<span class="sql">LIMIT</span> 5;</pre></div><div class="explain"><h3>Todas as colunas, cinco linhas</h3><p>O asterisco (<code>*</code>) significa “todas as colunas”. A tabela tem muitas colunas, pelo que o resultado pode ficar demasiado largo no terminal.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> *
+<span class="sql">FROM</span> premios
+<span class="sql">LIMIT</span> 1\G</pre></div><div class="explain"><h3>Um registo na vertical</h3><p>No cliente MySQL, <code>\G</code> substitui o ponto e vírgula e apresenta cada coluna numa linha. É especialmente útil quando uma tabela tem muitas colunas. Aqui limitamos o resultado a um registo para o observar com calma.</p></div></div>
+<div class="callout"><strong><code>\G</code> não faz parte da consulta SQL.</strong> É uma opção de apresentação do cliente de linha de comandos do MySQL.</div>
+</section>
+
+<section class="chapter" id="colunas"><div class="head"><div class="num">05</div><div><h2>Escolher apenas algumas colunas</h2><p class="lede">Na maioria das consultas não precisamos de <code>*</code>. Escrever os nomes das colunas torna o resultado mais curto e deixa claro o que estamos a procurar.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> firstname, surname, bornCountry
+<span class="sql">FROM</span> premios
+<span class="sql">LIMIT</span> 10;</pre></div><div class="explain"><h3>Nome e país de nascimento</h3><p>As colunas são separadas por vírgulas. A ordem usada no <code>SELECT</code> será também a ordem em que aparecem no resultado.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> firstname, surname,
+       prizes_0_year, prizes_0_category
+<span class="sql">FROM</span> premios
+<span class="sql">LIMIT</span> 10;</pre></div><div class="explain"><h3>Pessoa e primeiro prémio</h3><p>Esta versão liga a identificação do laureado ao ano e à categoria do primeiro prémio registado, sem mostrar as restantes dezenas de colunas.</p></div></div>
+</section>
+
+<section class="chapter" id="premios"><div class="head"><div class="num">06</div><div><h2>Uma pessoa pode ter vários prémios</h2><p class="lede">O ficheiro organizou os prémios em três conjuntos de colunas. O número depois de <code>prizes_</code> indica a posição do prémio no registo original.</p></div></div>
+<div class="grid"><div class="card"><span class="tag">PRIMEIRO</span><h3><code>prizes_0_*</code></h3><p>Ano, categoria, parte do prémio, motivação e dados de afiliação do primeiro prémio.</p></div><div class="card"><span class="tag">SEGUNDO</span><h3><code>prizes_1_*</code></h3><p>O mesmo conjunto de informações para um eventual segundo prémio.</p></div><div class="card"><span class="tag">TERCEIRO</span><h3><code>prizes_2_*</code></h3><p>Informações de um eventual terceiro prémio. Para a maioria dos registos, estes campos são <code>NULL</code>.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT</span> id, firstname, surname,
+       prizes_0_year, prizes_0_category,
+       prizes_1_year, prizes_1_category
+<span class="sql">FROM</span> premios
+<span class="sql">WHERE</span> prizes_1_year <span class="sql">IS NOT NULL</span>;</pre></div><div class="explain"><h3>Quem tem um segundo prémio?</h3><p><code>WHERE</code> filtra as linhas. <code>IS NOT NULL</code> conserva apenas os registos em que existe um ano para o segundo prémio. Em SQL, a ausência de valor verifica-se com <code>IS NULL</code> ou <code>IS NOT NULL</code>, e não com <code>= NULL</code>.</p></div></div>
+</section>
+
+<section class="summary"><h2>O percurso desta aula</h2><div class="grid"><div class="card"><h3>1 · Importar</h3><p>Criou a base de dados <code>nobel</code> e executou um ficheiro SQL com <code>SOURCE</code>.</p></div><div class="card"><h3>2 · Conhecer</h3><p>Usou <code>SHOW TABLES</code> e <code>DESCRIBE</code> para perceber o que existe.</p></div><div class="card"><h3>3 · Consultar</h3><p>Usou <code>SELECT</code>, <code>LIMIT</code>, <code>\G</code> e um primeiro filtro com <code>WHERE</code>.</p></div></div></section>
+</main>
+</body>
+</html>
