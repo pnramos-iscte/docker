@@ -166,19 +166,44 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 <div class="head" style="margin-top:58px"><div class="num">07.4</div><div><h2>Tentar criar a chave primária</h2><p class="lede">Já reunimos os países de nascimento e de falecimento. Vamos testar se <code>code</code> está pronto para identificar cada linha.</p></div></div>
 <div class="lesson"><div class="code"><pre><span class="sql">ALTER TABLE</span> pais
 <span class="sql">ADD PRIMARY KEY</span> (code);</pre></div><div class="explain"><h3>Execute o comando</h3><p>A chave primária exige que cada código apareça uma única vez e que nunca seja <code>NULL</code>. Será que os dados já cumprem essas condições?</p></div><div class="result"><div class="result-title">Houve um erro</div><div class="result-note"><code>ERROR 1062 (23000): Duplicate entry '...' for key 'pais.PRIMARY'</code><p>O valor concreto indicado na mensagem pode variar, mas a causa é a mesma: existem várias linhas com o mesmo código.</p></div></div></div>
-<article class="challenge"><h3>Que códigos têm designações diferentes?</h3><p>Escreva uma consulta que devolva todos os códigos associados a mais do que uma <strong>designação diferente</strong>. Para cada código, mostre as designações encontradas e a quantidade de designações distintas.</p><div class="unlock"><input id="password-conflicts" type="password" autocomplete="off" placeholder="Palavra-passe"><button id="unlock-conflicts" type="button">Mostrar comando e resultado</button></div><div class="unlock-status" id="unlock-status-conflicts" aria-live="polite"></div><div class="answer" id="answer-conflicts"><div class="code"><pre><span class="sql">SELECT</span>
-  code,
-  GROUP_CONCAT(
-    <span class="sql">DISTINCT</span> designacao_atual
-    <span class="sql">ORDER BY</span> designacao_atual
-    SEPARATOR <span class="str">' | '</span>
-  ) AS designacoes,
-  <span class="sql">COUNT</span>(DISTINCT designacao_atual)
-    AS total_designacoes
+<article class="challenge"><h3>Que códigos aparecem mais do que uma vez?</h3><p>Comece por agrupar as linhas por código e contar quantas existem em cada grupo. Mostre apenas os códigos cuja contagem é superior a um. Depois observe todas as linhas de <code>DK</code> e <code>GB</code>.</p><div class="unlock"><input id="password-conflicts" type="password" autocomplete="off" placeholder="Palavra-passe"><button id="unlock-conflicts" type="button">Mostrar comandos e resultados</button></div><div class="unlock-status" id="unlock-status-conflicts" aria-live="polite"></div><div class="answer" id="answer-conflicts"><div class="code"><pre><span class="sql">SELECT</span> code, <span class="sql">COUNT</span>(*)
 <span class="sql">FROM</span> pais
 <span class="sql">GROUP BY</span> code
-<span class="sql">HAVING COUNT</span>(DISTINCT designacao_atual) &gt; 1
-<span class="sql">ORDER BY</span> code;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado</div><table><thead><tr><th>code</th><th>designacoes</th><th>total_designacoes</th></tr></thead><tbody><tr><td>DK</td><td>Denmark | Faroe Islands (Denmark)</td><td>2</td></tr><tr><td>GB</td><td>Northern Ireland | Scotland | United Kingdom</td><td>3</td></tr></tbody></table></div><div class="callout"><strong>Encontrámos dois conflitos de designação.</strong> Isto não significa que sejam os únicos duplicados: podem também existir várias linhas completamente iguais, resultantes dos dois <code>INSERT</code>. Aqui procurámos especificamente códigos com nomes diferentes.</div></div></article>
+<span class="sql">HAVING COUNT</span>(*) &gt; 1
+<span class="sql">ORDER BY</span> code;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado: 37 códigos repetidos</div><table><thead><tr><th>code</th><th>COUNT(*)</th><th>code</th><th>COUNT(*)</th><th>code</th><th>COUNT(*)</th></tr></thead><tbody><tr><td>AR</td><td>2</td><td>AT</td><td>2</td><td>AU</td><td>2</td></tr><tr><td>BE</td><td>2</td><td>CA</td><td>2</td><td>CH</td><td>2</td></tr><tr><td>CL</td><td>2</td><td>CN</td><td>2</td><td>CZ</td><td>2</td></tr><tr><td>DE</td><td>2</td><td>DK</td><td>3</td><td>EG</td><td>2</td></tr><tr><td>ES</td><td>2</td><td>FI</td><td>2</td><td>FR</td><td>2</td></tr><tr><td>GB</td><td>6</td><td>GR</td><td>2</td><td>HU</td><td>2</td></tr><tr><td>IE</td><td>2</td><td>IL</td><td>2</td><td>IN</td><td>2</td></tr><tr><td>IS</td><td>2</td><td>IT</td><td>2</td><td>JP</td><td>2</td></tr><tr><td>KE</td><td>2</td><td>LC</td><td>2</td><td>MX</td><td>2</td></tr><tr><td>NL</td><td>2</td><td>NO</td><td>2</td><td>PL</td><td>2</td></tr><tr><td>PT</td><td>2</td><td>RO</td><td>2</td><td>RU</td><td>2</td></tr><tr><td>SE</td><td>2</td><td>US</td><td>2</td><td>VN</td><td>2</td></tr><tr><td>ZA</td><td>2</td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+<div class="code" style="margin-top:22px"><pre><span class="sql">SELECT</span> *
+<span class="sql">FROM</span> pais
+<span class="sql">WHERE</span> code = <span class="str">'DK'</span>
+   <span class="sql">OR</span> code = <span class="str">'GB'</span>
+<span class="sql">ORDER BY</span> code, designacao_atual;</pre></div><div class="result" style="margin-top:22px"><div class="result-title">Resultado</div><table><thead><tr><th>code</th><th>designacao_atual</th></tr></thead><tbody><tr><td>DK</td><td>Denmark</td></tr><tr><td>DK</td><td>Denmark</td></tr><tr><td>DK</td><td>Faroe Islands (Denmark)</td></tr><tr><td>GB</td><td>Northern Ireland</td></tr><tr><td>GB</td><td>Northern Ireland</td></tr><tr><td>GB</td><td>Scotland</td></tr><tr><td>GB</td><td>Scotland</td></tr><tr><td>GB</td><td>United Kingdom</td></tr><tr><td>GB</td><td>United Kingdom</td></tr></tbody></table></div><div class="callout"><strong>Há dois tipos de problema.</strong> Muitos códigos têm linhas exatamente iguais, provenientes dos dois <code>INSERT</code>. Em <code>DK</code> e <code>GB</code> há também designações diferentes para o mesmo código.</div></div></article>
+
+<div class="head" style="margin-top:58px"><div class="num">07.5</div><div><h2>E agora, o que fazemos?</h2><p class="lede">Antes de criar a PK, temos de escolher uma designação atual por código e eliminar as linhas repetidas.</p></div></div>
+<div class="callout"><strong>Sugestão de decisão:</strong> usar <em>Denmark</em> para <code>DK</code> e <em>United Kingdom</em> para <code>GB</code>. Esta é uma decisão de limpeza dos dados: o código representa o país atual, enquanto as designações regionais ou históricas permanecem guardadas nos campos originais de <code>premios</code>.</div>
+<div class="lesson"><div class="code"><pre><span class="sql">UPDATE</span> pais
+<span class="sql">SET</span> designacao_atual = <span class="str">'Denmark'</span>
+<span class="sql">WHERE</span> code = <span class="str">'DK'</span>;
+
+<span class="sql">UPDATE</span> pais
+<span class="sql">SET</span> designacao_atual = <span class="str">'United Kingdom'</span>
+<span class="sql">WHERE</span> code = <span class="str">'GB'</span>;</pre></div><div class="explain"><h3>Primeiro, uniformizar</h3><p>Todas as linhas com o mesmo código passam a ter a designação que decidimos usar. Continuam a existir linhas repetidas, mas já não existem nomes diferentes para <code>DK</code> e <code>GB</code>.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">CREATE TEMPORARY TABLE</span> pais_unicos AS
+<span class="sql">SELECT DISTINCT</span> code, designacao_atual
+<span class="sql">FROM</span> pais;
+
+<span class="sql">TRUNCATE TABLE</span> pais;
+
+<span class="sql">INSERT INTO</span> pais (code, designacao_atual)
+<span class="sql">SELECT</span> code, designacao_atual
+<span class="sql">FROM</span> pais_unicos;
+
+<span class="sql">DROP TEMPORARY TABLE</span> pais_unicos;</pre></div><div class="explain"><h3>Depois, eliminar repetições</h3><p>A tabela temporária conserva apenas combinações distintas. Esvaziamos <code>pais</code>, voltamos a inserir as linhas únicas e eliminamos a tabela temporária.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">ALTER TABLE</span> pais
+<span class="sql">ADD PRIMARY KEY</span> (code);
+
+<span class="sql">SELECT COUNT</span>(*) AS linhas,
+       <span class="sql">COUNT</span>(DISTINCT code) AS codigos
+<span class="sql">FROM</span> pais;</pre></div><div class="explain"><h3>Agora a PK já pode ser criada</h3><p>O comando deve terminar sem erro. A verificação devolve <strong>88 linhas</strong> e <strong>88 códigos distintos</strong>.</p></div></div>
+<div class="callout warn"><strong>Próxima fase:</strong> a tabela <code>pais</code> já tem uma linha por código e uma PK. Falta criar em <code>premios</code> as chaves estrangeiras que ligam <code>bornCountryCode</code> e <code>diedCountryCode</code> a <code>pais.code</code>.</div>
 </section>
 
 <section class="summary"><h2>O percurso desta aula</h2><div class="grid"><div class="card"><h3>1 · Importar</h3><p>Criou a base de dados <code>nobel</code> e executou um ficheiro SQL com <code>SOURCE</code>.</p></div><div class="card"><h3>2 · Conhecer</h3><p>Usou <code>SHOW TABLES</code> e <code>DESCRIBE</code> para perceber o que existe.</p></div><div class="card"><h3>3 · Consultar</h3><p>Usou <code>SELECT</code>, <code>LIMIT</code>, <code>\G</code> e um primeiro filtro com <code>WHERE</code>.</p></div></div></section>
