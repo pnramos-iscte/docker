@@ -198,6 +198,7 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 <span class="sql">UPDATE</span> pais
 <span class="sql">SET</span> designacao_atual = <span class="str">'United Kingdom'</span>
 <span class="sql">WHERE</span> code = <span class="str">'GB'</span>;</pre></div><div class="explain"><h3>Primeiro, uniformizar</h3><p>Todas as linhas com o mesmo código passam a ter a designação que decidimos usar. Continuam a existir linhas repetidas, mas já não existem nomes diferentes para <code>DK</code> e <code>GB</code>.</p></div></div>
+<div class="callout"><strong>O que é uma tabela temporária?</strong> É uma tabela auxiliar que existe apenas na sessão atual do MySQL. Só a ligação que a criou consegue utilizá-la e, quando essa ligação termina, o MySQL elimina-a automaticamente. É útil para guardar um resultado intermédio enquanto alteramos uma tabela permanente. Aqui, <code>pais_unicos</code> funciona como uma cópia de trabalho sem repetições; a tabela permanente continua a ser <code>pais</code>.</div>
 <div class="lesson"><div class="code"><pre><span class="sql">CREATE TEMPORARY TABLE</span> pais_unicos AS
 <span class="sql">SELECT DISTINCT</span> code, designacao_atual
 <span class="sql">FROM</span> pais;
@@ -208,7 +209,7 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 <span class="sql">SELECT</span> code, designacao_atual
 <span class="sql">FROM</span> pais_unicos;
 
-<span class="sql">DROP TEMPORARY TABLE</span> pais_unicos;</pre></div><div class="explain"><h3>Depois, eliminar repetições</h3><p>A tabela temporária conserva apenas combinações distintas. Esvaziamos <code>pais</code>, voltamos a inserir as linhas únicas e eliminamos a tabela temporária.</p></div></div>
+<span class="sql">DROP TEMPORARY TABLE</span> pais_unicos;</pre></div><div class="explain"><h3>Depois, eliminar repetições</h3><ol><li><code>CREATE TEMPORARY TABLE ... AS SELECT</code> cria <code>pais_unicos</code> com o resultado do <code>SELECT DISTINCT</code>.</li><li><code>TRUNCATE</code> esvazia a tabela permanente <code>pais</code>, mas mantém a sua estrutura.</li><li>O <code>INSERT</code> devolve a <code>pais</code> apenas as linhas únicas guardadas temporariamente.</li><li><code>DROP TEMPORARY TABLE</code> elimina a tabela auxiliar sem afetar <code>pais</code>.</li></ol><p>Estes comandos devem ser executados na mesma sessão do MySQL. Se sair do cliente antes de terminar, <code>pais_unicos</code> desaparece.</p></div></div>
 <div class="lesson"><div class="code"><pre><span class="sql">ALTER TABLE</span> pais
 <span class="sql">ADD PRIMARY KEY</span> (code);
 
