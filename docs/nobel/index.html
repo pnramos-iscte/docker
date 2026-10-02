@@ -10,7 +10,7 @@
 </style>
 </head>
 <body>
-<header class="top"><div class="brand">SQL · NOBEL</div><nav><a href="#preparar">Preparar</a><a href="#importar">Importar</a><a href="#estrutura">Estrutura</a><a href="#consultar">Consultar</a><a href="#premios">Vários prémios</a></nav></header>
+<header class="top"><div class="brand">SQL · NOBEL</div><nav><a href="#preparar">Preparar</a><a href="#importar">Importar</a><a href="#estrutura">Estrutura</a><a href="#consultar">Consultar</a><a href="#premios">Vários prémios</a><a href="#contar">Contar</a></nav></header>
 
 <section class="hero"><div><div class="eyebrow">BASES DE DADOS · AULA SQL</div><div class="author">Autor: Pedro Ramos</div><h1>SQL com os<br>Prémios Nobel</h1><p>Um primeiro contacto com uma base de dados real: importar o ficheiro, conhecer a tabela e começar a escolher a informação que queremos consultar.</p><a class="start" href="#preparar">Começar ↓</a><a class="download" href="exportpremios.sql" download>Descarregar exportpremios.sql</a></div><div class="hero-card"><code><span class="sql">CREATE DATABASE</span> nobel;<br><span class="sql">USE</span> nobel;<br><br><span class="sql">SOURCE</span> /exemplos/exportpremios.sql;<br><br><span class="sql">SELECT</span> firstname, surname,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; prizes_0_year<br><span class="sql">FROM</span> premios<br><span class="sql">LIMIT</span> 5;</code></div></section>
 
@@ -57,6 +57,23 @@ mysql -u root -p</pre></div><div class="explain"><h3>O que significa?</h3><p><co
 </article>
 </section>
 
+<section class="chapter" id="contar"><div class="head"><div class="num">06</div><div><h2>Quantos laureados existem?</h2><p class="lede">Agora já não queremos ver cada laureado: queremos obter uma contagem. A função de agregação <code>COUNT(*)</code> conta as linhas da tabela e devolve um único resultado.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="sql">SELECT COUNT</span>(*) AS total_laureados
+<span class="sql">FROM</span> premios;</pre></div><div class="explain"><h3>Contar todos os registos</h3><p><code>COUNT(*)</code> conta todas as linhas. <code>AS total_laureados</code> dá um nome mais claro à coluna calculada.</p></div><div class="result"><div class="result-title">Resultado</div><table><thead><tr><th>total_laureados</th></tr></thead><tbody><tr><td>955</td></tr></tbody></table></div></div>
+
+<article class="challenge"><h3>Quantos laureados chegaram a um segundo prémio?</h3><p>Escreva uma consulta que devolva apenas a quantidade. Depois pense numa segunda consulta: quantos chegaram a um terceiro prémio?</p><div class="unlock"><input id="password-count" type="password" autocomplete="off" placeholder="Palavra-passe"><button id="unlock-count" type="button">Mostrar respostas</button></div><div class="unlock-status" id="unlock-status-count" aria-live="polite"></div>
+<div class="answer" id="answer-count"><div class="lesson"><div class="code"><pre><span class="cm">-- Pelo menos dois prémios</span>
+<span class="sql">SELECT COUNT</span>(*) AS laureados_com_2_premios
+<span class="sql">FROM</span> premios
+<span class="sql">WHERE</span> prizes_1_year <span class="sql">IS NOT NULL</span>;</pre></div><div class="explain"><h3>Resultado: 6</h3><p>Se <code>prizes_1_year</code> está preenchido, existe um segundo prémio. A consulta conta seis laureados nesta situação.</p></div></div>
+<div class="lesson"><div class="code"><pre><span class="cm">-- Três prémios</span>
+<span class="sql">SELECT COUNT</span>(*) AS laureados_com_3_premios
+<span class="sql">FROM</span> premios
+<span class="sql">WHERE</span> prizes_2_year <span class="sql">IS NOT NULL</span>;</pre></div><div class="explain"><h3>Resultado: 1</h3><p>O terceiro conjunto começa em <code>prizes_2_</code>. Apenas um laureado tem o ano do terceiro prémio preenchido.</p></div></div>
+<div class="callout warn"><strong>“Pelo menos dois” não é igual a “exatamente dois”.</strong> Os seis incluem o laureado que também tem um terceiro prémio. Se pedíssemos exatamente dois, seria necessário acrescentar <code>AND prizes_2_year IS NULL</code>, e o resultado seria 5.</div></div>
+</article>
+</section>
+
 <section class="summary"><h2>O percurso desta aula</h2><div class="grid"><div class="card"><h3>1 · Importar</h3><p>Criou a base de dados <code>nobel</code> e executou um ficheiro SQL com <code>SOURCE</code>.</p></div><div class="card"><h3>2 · Conhecer</h3><p>Usou <code>SHOW TABLES</code> e <code>DESCRIBE</code> para perceber o que existe.</p></div><div class="card"><h3>3 · Consultar</h3><p>Usou <code>SELECT</code>, <code>LIMIT</code>, <code>\G</code> e um primeiro filtro com <code>WHERE</code>.</p></div></div></section>
 </main>
 <script>
@@ -64,6 +81,8 @@ const expectedHash='18a54cbd476eb64ac405929debb6abb4c8eb188218d37b4541545ec41140
 async function sha256(value){const data=new TextEncoder().encode(value);const hash=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 async function unlock(){const input=document.getElementById('password');const status=document.getElementById('unlock-status');if(await sha256(input.value)===expectedHash){document.getElementById('answer').classList.add('open');status.textContent='Resposta desbloqueada.';status.style.color='#13795b';input.value=''}else{status.textContent='Palavra-passe incorreta.';status.style.color='#b73546';input.select()}}
 document.getElementById('unlock').addEventListener('click',unlock);document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
+async function unlockCount(){const input=document.getElementById('password-count');const status=document.getElementById('unlock-status-count');if(await sha256(input.value)===expectedHash){document.getElementById('answer-count').classList.add('open');status.textContent='Respostas desbloqueadas.';status.style.color='#13795b';input.value=''}else{status.textContent='Palavra-passe incorreta.';status.style.color='#b73546';input.select()}}
+document.getElementById('unlock-count').addEventListener('click',unlockCount);document.getElementById('password-count').addEventListener('keydown',e=>{if(e.key==='Enter')unlockCount()});
 </script>
 </body>
 </html>
