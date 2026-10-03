@@ -22,12 +22,16 @@
     if (answers) return true;
     const password = prompt("Introduza a senha para consultar as resoluções:");
     if (password === null) return false;
-    let encrypted;
+    let encryptedVersions;
     try {
-      encrypted = await fetch("solutions.enc.json", { cache: "no-store" }).then(response => {
-        if (!response.ok) throw new Error("load");
-        return response.json();
-      });
+      encryptedVersions = await Promise.all(
+        ["solutions.enc.json", "solutions-alt.enc.json"].map(file =>
+          fetch(file, { cache: "no-store" }).then(response => {
+            if (!response.ok) throw new Error("load");
+            return response.json();
+          }),
+        ),
+      );
     } catch (error) {
       if (location.protocol === "file:") {
         alert("As resoluções protegidas não podem ser carregadas quando a página é aberta diretamente como ficheiro local. Abra a versão publicada em https://pnramos-iscte.github.io/docker/exercicios-select-hotel/ e use a senha indicada pelo docente.");
@@ -40,23 +44,30 @@
       const material = await crypto.subtle.importKey(
         "raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"],
       );
-      const key = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: bytes(encrypted.salt), iterations: 250000, hash: "SHA-256" },
-        material,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["decrypt"],
-      );
-      const body = bytes(encrypted.data);
-      const tag = bytes(encrypted.tag);
-      const combined = new Uint8Array(body.length + tag.length);
-      combined.set(body);
-      combined.set(tag, body.length);
-      const clear = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: bytes(encrypted.iv) }, key, combined,
-      );
-      answers = JSON.parse(new TextDecoder().decode(clear));
-      return true;
+      for (const encrypted of encryptedVersions) {
+        try {
+          const key = await crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: bytes(encrypted.salt), iterations: 250000, hash: "SHA-256" },
+            material,
+            { name: "AES-GCM", length: 256 },
+            false,
+            ["decrypt"],
+          );
+          const body = bytes(encrypted.data);
+          const tag = bytes(encrypted.tag);
+          const combined = new Uint8Array(body.length + tag.length);
+          combined.set(body);
+          combined.set(tag, body.length);
+          const clear = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: bytes(encrypted.iv) }, key, combined,
+          );
+          answers = JSON.parse(new TextDecoder().decode(clear));
+          return true;
+        } catch (error) {
+          // Esta versão não corresponde à senha introduzida; tenta a seguinte.
+        }
+      }
+      throw new Error("password");
     } catch (error) {
       alert("Senha incorreta.");
       return false;
