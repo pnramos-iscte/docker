@@ -31,19 +31,19 @@
 <span class="sql">SELECT</span> u.nome, <span class="sql">NULL</span> AS pais
 <span class="sql">FROM</span> utilizador AS u
 <span class="sql">WHERE</span> u.estado = <span class="str">'ativo'</span>
-  <span class="sql">AND</span> u.pais_id <span class="sql">IS NULL</span>;</pre></div><div class="explain"><h3>Primeiro, com UNION</h3><p>Sem usar <code>LEFT JOIN</code>, precisamos de duas consultas: uma encontra os utilizadores ativos do Brasil e a outra encontra os utilizadores ativos que não têm país. O <code>UNION</code> reúne os resultados das duas consultas.</p><p>É precisamente este tipo de consulta que pode tornar-se incómodo repetir em vários relatórios.</p></div><div class="code"><pre><span class="cm">-- Por curiosidade: a mesma consulta com LEFT JOIN</span>
+  <span class="sql">AND</span> u.pais_id <span class="sql">IS NULL</span>;</pre></div><div class="explain"><h3>Primeiro, com UNION</h3><p>Sem usar <code>LEFT JOIN</code>, precisamos de duas consultas: uma encontra os utilizadores ativos do Brasil e a outra encontra os utilizadores ativos que não têm país. O <code>UNION</code> reúne os resultados das duas consultas.</p><p>É precisamente este tipo de consulta que pode tornar-se incómodo repetir em vários relatórios.</p></div><div class="code"><pre><span class="cm">-- Com a view já criada</span>
+<span class="sql">SELECT</span> nome, pais
+<span class="sql">FROM</span> vw_utilizador_pais
+<span class="sql">WHERE</span> estado = <span class="str">'ativo'</span>
+  <span class="sql">AND</span> (pais = <span class="str">'Brasil'</span>
+       <span class="sql">OR</span> pais <span class="sql">IS NULL</span>);</pre></div><div class="explain"><h3>Com a view</h3><p>A associação entre utilizador e país já ficou guardada na view. A consulta passa a concentrar-se apenas na pergunta que queremos fazer aos dados.</p></div><div class="code"><pre><span class="cm">-- Por curiosidade: a mesma consulta com LEFT JOIN</span>
 <span class="sql">SELECT</span> u.nome, p.nome AS pais
 <span class="sql">FROM</span> utilizador AS u
 <span class="sql">LEFT JOIN</span> pais AS p
   <span class="sql">ON</span> p.pais_id = u.pais_id
 <span class="sql">WHERE</span> u.estado = <span class="str">'ativo'</span>
   <span class="sql">AND</span> (p.nome = <span class="str">'Brasil'</span>
-       <span class="sql">OR</span> p.nome <span class="sql">IS NULL</span>);</pre></div><div class="explain"><h3>Por curiosidade: com LEFT JOIN</h3><p>O <code>LEFT JOIN</code> permite obter o mesmo resultado numa única consulta: conserva todos os utilizadores da tabela da esquerda, mesmo quando não existe um país correspondente.</p></div><div class="code"><pre><span class="cm">-- Com a view já criada</span>
-<span class="sql">SELECT</span> nome, pais
-<span class="sql">FROM</span> vw_utilizador_pais
-<span class="sql">WHERE</span> estado = <span class="str">'ativo'</span>
-  <span class="sql">AND</span> (pais = <span class="str">'Brasil'</span>
-       <span class="sql">OR</span> pais <span class="sql">IS NULL</span>);</pre></div><div class="explain"><h3>Com a view</h3><p>A associação entre utilizador e país já ficou guardada na view. A consulta passa a concentrar-se apenas na pergunta que queremos fazer aos dados.</p></div><div class="result"><div class="result-title">A pergunta fica separada da forma de ligar as tabelas</div><div class="result-note">A view evita repetir a lógica de associação entre as tabelas em cada relatório.</div></div></div>
+       <span class="sql">OR</span> p.nome <span class="sql">IS NULL</span>);</pre></div><div class="explain"><h3>Por curiosidade: com LEFT JOIN</h3><p>O <code>LEFT JOIN</code> permite obter o mesmo resultado numa única consulta: conserva todos os utilizadores da tabela da esquerda, mesmo quando não existe um país correspondente.</p></div><div class="result"><div class="result-title">A pergunta fica separada da forma de ligar as tabelas</div><div class="result-note">A view evita repetir a lógica de associação entre as tabelas em cada relatório.</div></div></div>
 <h3>Exemplo 2 · Uma agregação que passa a poder ser consultada</h3><div class="lesson"><div class="code"><pre><span class="sql">CREATE VIEW</span> vw_estatisticas_autor AS
 <span class="sql">SELECT</span> u.utilizador_id,
        u.nome,
