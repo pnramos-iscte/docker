@@ -17,19 +17,33 @@
   <span class="sql">ON</span> p.pais_id = u.pais_id;</pre></div><div class="explain"><h3>Criar e consultar</h3><p><code>CREATE VIEW nome AS consulta</code> guarda a consulta com um nome.</p><p>Depois podemos usar <code>vw_utilizador_pais</code> em <code>SELECT</code>, <code>WHERE</code>, <code>JOIN</code> e outras operações como se fosse uma tabela.</p><p><code>SHOW CREATE VIEW vw_utilizador_pais;</code> mostra a definição guardada.</p></div><div class="result"><div class="result-title">SELECT * FROM vw_utilizador_pais</div><table><thead><tr><th>utilizador_id</th><th>nome</th><th>estado</th><th>pais</th></tr></thead><tbody><tr><td>101</td><td>Ana Costa</td><td>ativo</td><td>Portugal</td></tr><tr><td>102</td><td>Bruno Lima</td><td>ativo</td><td>Brasil</td></tr><tr><td>105</td><td>Eva Rocha</td><td>ativo</td><td><em>NULL</em></td></tr></tbody></table></div></div></section>
 
 <section class="chapter" id="simplificar"><div class="head"><div class="num">02</div><div><h2>Quando uma view simplifica mesmo</h2><p class="lede">As views úteis escondem complexidade relevante. Uma view que apenas faz <code>SELECT * FROM tabela</code> raramente ajuda.</p></div></div>
-<h3>Exemplo 1 · Uma junção usada muitas vezes</h3><div class="lesson"><div class="code"><pre><span class="cm">-- Sem a view: repetir em cada relatório</span>
+<h3>Exemplo 1 · Uma junção usada muitas vezes</h3><div class="lesson"><div class="code"><pre><span class="cm">-- Sem LEFT JOIN: obter os ativos do Brasil</span>
+<span class="sql">SELECT</span> u.nome, p.nome AS pais
+<span class="sql">FROM</span> utilizador AS u
+<span class="sql">JOIN</span> pais AS p
+  <span class="sql">ON</span> p.pais_id = u.pais_id
+<span class="sql">WHERE</span> u.estado = <span class="str">'ativo'</span>
+  <span class="sql">AND</span> p.nome = <span class="str">'Brasil'</span>
+
+<span class="sql">UNION</span>
+
+<span class="cm">-- Juntar os utilizadores ativos sem país</span>
+<span class="sql">SELECT</span> u.nome, <span class="sql">NULL</span> AS pais
+<span class="sql">FROM</span> utilizador AS u
+<span class="sql">WHERE</span> u.estado = <span class="str">'ativo'</span>
+  <span class="sql">AND</span> u.pais_id <span class="sql">IS NULL</span>;</pre></div><div class="explain"><h3>Primeiro, com UNION</h3><p>Sem usar <code>LEFT JOIN</code>, precisamos de duas consultas: uma encontra os utilizadores ativos do Brasil e a outra encontra os utilizadores ativos que não têm país. O <code>UNION</code> reúne os resultados das duas consultas.</p><p>É precisamente este tipo de consulta que pode tornar-se incómodo repetir em vários relatórios.</p></div><div class="code"><pre><span class="cm">-- Por curiosidade: a mesma consulta com LEFT JOIN</span>
 <span class="sql">SELECT</span> u.nome, p.nome AS pais
 <span class="sql">FROM</span> utilizador AS u
 <span class="sql">LEFT JOIN</span> pais AS p
   <span class="sql">ON</span> p.pais_id = u.pais_id
 <span class="sql">WHERE</span> u.estado = <span class="str">'ativo'</span>
   <span class="sql">AND</span> (p.nome = <span class="str">'Brasil'</span>
-       <span class="sql">OR</span> p.nome <span class="sql">IS NULL</span>);</pre></div><div class="code"><pre><span class="cm">-- Com a view já criada</span>
+       <span class="sql">OR</span> p.nome <span class="sql">IS NULL</span>);</pre></div><div class="explain"><h3>Por curiosidade: com LEFT JOIN</h3><p>O <code>LEFT JOIN</code> permite obter o mesmo resultado numa única consulta: conserva todos os utilizadores da tabela da esquerda, mesmo quando não existe um país correspondente.</p></div><div class="code"><pre><span class="cm">-- Com a view já criada</span>
 <span class="sql">SELECT</span> nome, pais
 <span class="sql">FROM</span> vw_utilizador_pais
 <span class="sql">WHERE</span> estado = <span class="str">'ativo'</span>
   <span class="sql">AND</span> (pais = <span class="str">'Brasil'</span>
-       <span class="sql">OR</span> pais <span class="sql">IS NULL</span>);</pre></div><div class="result"><div class="result-title">A pergunta fica separada da forma de ligar as tabelas</div><div class="result-note">A view resolve a associação entre utilizador e país. A consulta posterior concentra-se apenas no filtro pretendido.</div></div></div>
+       <span class="sql">OR</span> pais <span class="sql">IS NULL</span>);</pre></div><div class="explain"><h3>Com a view</h3><p>A associação entre utilizador e país já ficou guardada na view. A consulta passa a concentrar-se apenas na pergunta que queremos fazer aos dados.</p></div><div class="result"><div class="result-title">A pergunta fica separada da forma de ligar as tabelas</div><div class="result-note">A view evita repetir a lógica de associação entre as tabelas em cada relatório.</div></div></div>
 <h3>Exemplo 2 · Uma agregação que passa a poder ser consultada</h3><div class="lesson"><div class="code"><pre><span class="sql">CREATE VIEW</span> vw_estatisticas_autor AS
 <span class="sql">SELECT</span> u.utilizador_id,
        u.nome,
@@ -39,7 +53,7 @@
 <span class="sql">FROM</span> utilizador AS u
 <span class="sql">LEFT JOIN</span> post AS p
   <span class="sql">ON</span> p.utilizador_id = u.utilizador_id
-<span class="sql">GROUP BY</span> u.utilizador_id, u.nome;</pre></div><div class="explain"><h3>Um resumo reutilizável</h3><p>A view resolve de uma vez o <code>LEFT JOIN</code>, o agrupamento e três agregações. Inclui autores sem posts porque começa em <code>utilizador</code>.</p><p>Outras consultas podem agora filtrar, ordenar ou juntar este resumo sem repetir a lógica.</p></div><div class="result"><div class="result-title">Uma consulta posterior muito menor</div><div class="result-note"><code>SELECT nome, total_gostos FROM vw_estatisticas_autor WHERE total_posts &gt;= 2 ORDER BY total_gostos DESC;</code></div></div></div>
+<span class="sql">GROUP BY</span> u.utilizador_id, u.nome;</pre></div><div class="explain"><h3>Um resumo reutilizável</h3><p>A view resolve de uma vez o <code>LEFT JOIN</code>, o agrupamento e três agregações. Inclui autores sem posts porque começa em <code>utilizador</code>.</p><p><strong>O que faz COALESCE?</strong> A função <code>COALESCE(valor, 0)</code> devolve o primeiro valor que não seja <code>NULL</code>. Assim, se <code>SUM(p.gostos)</code> ou <code>AVG(p.gostos)</code> produzir <code>NULL</code> para um autor sem posts, o resultado apresentado será <code>0</code>. Neste exemplo, usamos <code>COALESCE</code> para evitar mostrar <code>NULL</code> nos totais e médias.</p><p>Outras consultas podem agora filtrar, ordenar ou juntar este resumo sem repetir a lógica.</p></div><div class="result"><div class="result-title">Uma consulta posterior muito menor</div><div class="result-note"><code>SELECT nome, total_gostos FROM vw_estatisticas_autor WHERE total_posts &gt;= 2 ORDER BY total_gostos DESC;</code></div></div></div>
 <h3>Exemplo 3 · Construir uma view sobre outra</h3><div class="lesson"><div class="code"><pre><span class="sql">CREATE VIEW</span> vw_autores_relevantes AS
 <span class="sql">SELECT</span> utilizador_id, nome,
        total_posts, total_gostos
